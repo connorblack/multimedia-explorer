@@ -7,7 +7,7 @@ import AccordionCards from "@/components/accordion-cards";
 import GenerateForm from "@/components/generate-form";
 import ImageResult from "@/components/image-result";
 import HistoryTimeline from "@/components/history-timeline";
-import { MODELS, type ReferenceImage, type HistoryEntry } from "@/lib/types";
+import { MODELS, MOOD_MODELS, type ReferenceImage, type HistoryEntry } from "@/lib/types";
 import { saveImage, loadImage, deleteImages, clearAllImages } from "@/lib/history-db";
 
 const HISTORY_KEY = "generation_history";
@@ -23,6 +23,7 @@ function stripDataUrls(images: ReferenceImage[]): ReferenceImage[] {
 export default function Home() {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData | null>(null);
+  const [moodModel, setMoodModel] = useState(MOOD_MODELS[0].id);
   const [model, setModel] = useState(MODELS[0].id);
   const [referenceImages, setReferenceImages] = useState<ReferenceImage[]>([]);
   const [aspectRatio, setAspectRatio] = useState("1:1");
@@ -56,6 +57,9 @@ export default function Home() {
       const storedKey = localStorage.getItem("openrouter_api_key");
       if (storedKey) setApiKey(storedKey);
     }
+
+    const storedMoodModel = localStorage.getItem("mood_model");
+    if (storedMoodModel) setMoodModel(storedMoodModel);
 
     const storedBrand = localStorage.getItem("moodboard_data");
     if (storedBrand) {
@@ -105,6 +109,11 @@ export default function Home() {
     setImageResult(null);
   }
 
+  function handleMoodModelChange(m: string) {
+    setMoodModel(m);
+    localStorage.setItem("mood_model", m);
+  }
+
   function handleBrandData(data: BrandData | null) {
     setBrandData(data);
     if (data) {
@@ -118,6 +127,7 @@ export default function Home() {
     // Clear localStorage
     localStorage.removeItem("openrouter_api_key");
     localStorage.removeItem("moodboard_data");
+    localStorage.removeItem("mood_model");
     localStorage.removeItem(HISTORY_KEY);
 
     // Clear IndexedDB
@@ -126,6 +136,7 @@ export default function Home() {
     // Reset all state
     setApiKey(null);
     setBrandData(null);
+    setMoodModel(MOOD_MODELS[0].id);
     setModel(MODELS[0].id);
     setReferenceImages([]);
     setAspectRatio("1:1");
@@ -277,6 +288,8 @@ export default function Home() {
               brandData={brandData}
               onBrandData={handleBrandData}
               onAuthNeeded={handleLogin}
+              moodModel={moodModel}
+              onMoodModelChange={handleMoodModelChange}
               model={model}
               onModelChange={setModel}
               referenceImages={referenceImages}

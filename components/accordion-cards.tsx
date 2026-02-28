@@ -14,6 +14,8 @@ export default function AccordionCards({
   brandData,
   onBrandData,
   onAuthNeeded,
+  moodModel,
+  onMoodModelChange,
   model,
   onModelChange,
   referenceImages,
@@ -27,6 +29,8 @@ export default function AccordionCards({
   brandData: BrandData | null;
   onBrandData: (data: BrandData | null) => void;
   onAuthNeeded: (key: string) => void;
+  moodModel: string;
+  onMoodModelChange: (model: string) => void;
   model: string;
   onModelChange: (model: string) => void;
   referenceImages: ReferenceImage[];
@@ -73,12 +77,14 @@ export default function AccordionCards({
       {expandedCard && (
         <div className="mt-2 p-4 bg-surface/50 border border-border rounded-lg">
           {expandedCard === "mood" && (
-            <MoodCardBody brandData={brandData} onClear={() => onBrandData(null)}>
+            <MoodCardBody>
               <Moodboard
                 apiKey={apiKey}
                 brandData={brandData}
                 onBrandData={onBrandData}
                 onAuthNeeded={onAuthNeeded}
+                moodModel={moodModel}
+                onMoodModelChange={onMoodModelChange}
               />
             </MoodCardBody>
           )}

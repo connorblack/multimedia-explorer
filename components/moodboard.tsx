@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MOOD_MODELS } from "@/lib/types";
 import AuthPrompt from "./auth-prompt";
 
 export interface BrandData {
@@ -10,6 +11,7 @@ export interface BrandData {
   tone: string;
   stylePrompt: string;
   customSystemPrompt?: string;
+  generatedByModel?: string;
 }
 
 export function buildSystemPrompt(data: BrandData): string {
@@ -32,11 +34,15 @@ export default function Moodboard({
   brandData,
   onBrandData,
   onAuthNeeded,
+  moodModel,
+  onMoodModelChange,
 }: {
   apiKey: string | null;
   brandData: BrandData | null;
   onBrandData: (data: BrandData | null) => void;
   onAuthNeeded: (key: string) => void;
+  moodModel: string;
+  onMoodModelChange: (model: string) => void;
 }) {
   const [mode, setMode] = useState<MoodMode>("url");
   const [url, setUrl] = useState("");
@@ -64,10 +70,15 @@ export default function Moodboard({
     setError(null);
 
     try {
+      let cleanUrl = url.trim();
+      if (mode === "url" && !/^https?:\/\//i.test(cleanUrl)) {
+        cleanUrl = `https://${cleanUrl}`;
+      }
+
       const body =
         mode === "url"
-          ? { url: url.trim() }
-          : { prompt: prompt.trim() };
+          ? { url: cleanUrl, model: moodModel }
+          : { prompt: prompt.trim(), model: moodModel };
 
       const res = await fetch("/api/moodboard", {
         method: "POST",
@@ -84,7 +95,7 @@ export default function Moodboard({
       }
 
       const data: BrandData = await res.json();
-      onBrandData(data);
+      onBrandData({ ...data, generatedByModel: moodModel });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -92,73 +103,107 @@ export default function Moodboard({
     }
   }
 
+  const generatedModelId = brandData?.generatedByModel ?? moodModel;
+  const generatedModelLabel = MOOD_MODELS.find((m) => m.id === generatedModelId)?.label ?? generatedModelId;
+
   return (
     <div className="space-y-4">
-      {/* Mode toggle */}
-      <div className="flex gap-1 p-0.5 bg-surface border border-border rounded-lg w-fit">
-        <button
-          type="button"
-          onClick={() => setMode("url")}
-          className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-            mode === "url"
-              ? "bg-accent text-white"
-              : "text-muted hover:text-foreground"
-          }`}
-        >
-          From URL
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("prompt")}
-          className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-            mode === "prompt"
-              ? "bg-accent text-white"
-              : "text-muted hover:text-foreground"
-          }`}
-        >
-          From Prompt
-        </button>
-      </div>
+      {!brandData && (
+        <>
+          {/* Mode toggle */}
+          <div className="flex gap-1 p-0.5 bg-surface border border-border rounded-lg w-fit">
+            <button
+              type="button"
+              onClick={() => setMode("url")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                mode === "url"
+                  ? "bg-accent text-white"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              From URL
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("prompt")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                mode === "prompt"
+                  ? "bg-accent text-white"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              From Prompt
+            </button>
+          </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        {mode === "url" ? (
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter a URL (e.g. https://openrouter.ai)"
-            className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-          />
-        ) : (
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe a mood (e.g. warm sunset, retro 80s neon)"
-            className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-          />
-        )}
-        <button
-          type="submit"
-          disabled={isDisabled}
-          className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-              {mode === "url" ? "Analyzing" : "Generating"}
-            </span>
-          ) : (
-            mode === "url" ? "Analyze" : "Generate"
+          <form onSubmit={handleSubmit} className="space-y-2">
+            {mode === "url" ? (
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter a URL (e.g. openrouter.ai)"
+                className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+              />
+            ) : (
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Describe a mood (e.g. warm sunset, retro 80s neon)"
+                className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+              />
+            )}
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isDisabled}
+                className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                    Generating
+                  </span>
+                ) : (
+                  "Generate Style with"
+                )}
+              </button>
+              <select
+                value={moodModel}
+                onChange={(e) => onMoodModelChange(e.target.value)}
+                className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
+              >
+                {MOOD_MODELS.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </form>
+
+          {error && (
+            <p className="text-sm text-red-400">{error}</p>
           )}
-        </button>
-      </form>
 
-      {error && (
-        <p className="text-sm text-red-400">{error}</p>
+          {showAuthPrompt && <AuthPrompt onAuthNeeded={onAuthNeeded} onDismiss={() => setShowAuthPrompt(false)} />}
+        </>
       )}
 
-      {showAuthPrompt && <AuthPrompt onAuthNeeded={onAuthNeeded} onDismiss={() => setShowAuthPrompt(false)} />}
+      {brandData && (
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted">
+            Generated by <span className="text-foreground">{generatedModelLabel}</span>
+          </span>
+          <button
+            onClick={() => onBrandData(null)}
+            className="text-xs text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+          >
+            Delete Mood
+          </button>
+        </div>
+      )}
 
       {brandData && (
         <div className="p-4 bg-surface border border-border rounded-lg space-y-4">

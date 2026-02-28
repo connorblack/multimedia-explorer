@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   }
   const apiKey = authHeader.slice(7);
 
-  const { url, prompt } = await request.json();
+  const { url, prompt, model } = await request.json();
   if (!url && !prompt) {
     return NextResponse.json(
       { error: "Either a URL or prompt is required" },
@@ -59,7 +59,7 @@ Return ONLY valid JSON, no markdown fences.`;
 
     const result = await client.chat.send({
       chatGenerationParams: {
-        model: "google/gemini-2.5-flash",
+        model: model || "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemContent },
           { role: "user", content: userContent },

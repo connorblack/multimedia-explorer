@@ -5,7 +5,7 @@ import type { BrandData } from "../moodboard";
 export function MoodCardHeader({ brandData }: { brandData: BrandData | null }) {
   return (
     <div>
-      <div className="text-sm font-medium">Mood</div>
+      <div className="text-sm font-medium">Set a Mood/Brand</div>
       <div className="mt-1">
         {brandData ? (
           <div className="flex gap-1">
@@ -18,7 +18,7 @@ export function MoodCardHeader({ brandData }: { brandData: BrandData | null }) {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-muted">Create</span>
+          <span className="text-xs text-muted">None</span>
         )}
       </div>
     </div>
@@ -27,25 +27,11 @@ export function MoodCardHeader({ brandData }: { brandData: BrandData | null }) {
 
 export function MoodCardBody({
   children,
-  brandData,
-  onClear,
 }: {
   children: React.ReactNode;
-  brandData: BrandData | null;
-  onClear: () => void;
 }) {
   return (
     <div className="space-y-3">
-      {brandData && (
-        <div className="flex justify-end">
-          <button
-            onClick={onClear}
-            className="text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
-          >
-            Clear
-          </button>
-        </div>
-      )}
       {children}
     </div>
   );
