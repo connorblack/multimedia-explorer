@@ -261,9 +261,12 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h1 className="text-lg font-heading font-semibold">
-              Media Playground
-            </h1>
+            <div>
+              <h1 className="text-lg font-heading font-semibold">
+                Media Playground
+              </h1>
+              <p className="text-[10px] text-muted leading-tight">Powered by <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">OpenRouter</a></p>
+            </div>
           </div>
 
           <AuthButton
@@ -352,15 +355,15 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-muted">
           <span className="flex items-center gap-3">
             <a
-              href="https://openrouter.ai"
+              href="https://openrouter.ai/docs/sdks"
               className="hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Built with OpenRouter
+              Built with the OpenRouter SDK
             </a>
             <a
-              href="https://github.com/openrouter"
+              href="https://github.com/OpenRouterTeam/media-playground"
               className="hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
