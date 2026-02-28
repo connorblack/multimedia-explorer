@@ -292,6 +292,11 @@ export default function Home() {
         {/* Page content */}
         <main className="flex-1 min-w-0">
           <div className="space-y-8">
+            {/* Intro text */}
+            <p className="text-sm text-muted text-center">
+              Use different LLMs and Media Models together to generate images
+            </p>
+
             {/* Accordion cards */}
             <AccordionCards
               apiKey={apiKey}

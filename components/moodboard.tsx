@@ -138,37 +138,30 @@ export default function Moodboard({
 
           <form onSubmit={handleSubmit} className="space-y-2">
             {mode === "url" ? (
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter a URL (e.g. openrouter.ai)"
-                className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-              />
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">Generate style from a website:</label>
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter a URL (e.g. openrouter.ai)"
+                  className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+                />
+              </div>
             ) : (
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe a mood (e.g. warm sunset, retro 80s neon)"
-                className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-              />
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">Generate style from a prompt:</label>
+                <input
+                  type="text"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Describe a mood (e.g. warm sunset, retro 80s neon)"
+                  className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+                />
+              </div>
             )}
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={isDisabled}
-                className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-                    Generating
-                  </span>
-                ) : (
-                  "Generate Style with"
-                )}
-              </button>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted">with</span>
               <select
                 value={moodModel}
                 onChange={(e) => onMoodModelChange(e.target.value)}
@@ -180,6 +173,20 @@ export default function Moodboard({
                   </option>
                 ))}
               </select>
+              <button
+                type="submit"
+                disabled={isDisabled}
+                className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                    Generating
+                  </span>
+                ) : (
+                  "Generate Style"
+                )}
+              </button>
             </div>
           </form>
 
