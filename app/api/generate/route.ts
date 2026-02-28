@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/openrouter";
 
-const ASPECT_RATIOS: Record<string, { width: number; height: number }> = {
-  "1:1": { width: 1024, height: 1024 },
-  "16:9": { width: 1536, height: 864 },
-  "9:16": { width: 864, height: 1536 },
-  "4:3": { width: 1365, height: 1024 },
-  "3:2": { width: 1536, height: 1024 },
-};
-
-const RESOLUTIONS: Record<string, number> = {
-  "1K": 1,
-  "2K": 2,
-};
+const VALID_ASPECT_RATIOS = new Set(["1:1", "16:9", "9:16", "4:3", "3:2"]);
+const VALID_RESOLUTIONS = new Set(["1K", "2K"]);
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -30,8 +20,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const aspect = ASPECT_RATIOS[aspectRatio] || ASPECT_RATIOS["1:1"];
-  const scale = RESOLUTIONS[resolution] || 1;
+  const validAspect = VALID_ASPECT_RATIOS.has(aspectRatio) ? aspectRatio : "1:1";
+  const validResolution = VALID_RESOLUTIONS.has(resolution) ? resolution : "1K";
 
   // Build messages with brand context as a system message when available
   type ContentPart =
@@ -85,8 +75,8 @@ export async function POST(request: NextRequest) {
         messages,
         modalities: ["image"],
         imageConfig: {
-          width: aspect.width * scale,
-          height: aspect.height * scale,
+          aspect_ratio: validAspect,
+          image_size: validResolution,
         },
       },
     });
