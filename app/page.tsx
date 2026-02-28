@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from "react";
 import AuthButton from "@/components/auth-button";
-import Moodboard, { type BrandData } from "@/components/moodboard";
+import type { BrandData } from "@/components/moodboard";
+import AccordionCards from "@/components/accordion-cards";
 import GenerateForm from "@/components/generate-form";
 import ImageResult from "@/components/image-result";
+import { MODELS, type ReferenceImage } from "@/lib/types";
 
 export default function Home() {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData | null>(null);
+  const [model, setModel] = useState(MODELS[0].id);
+  const [referenceImages, setReferenceImages] = useState<ReferenceImage[]>([]);
   const [imageResult, setImageResult] = useState<{
     imageUrl: string;
     model: string;
@@ -97,21 +101,25 @@ export default function Home() {
       {/* Main content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Moodboard section */}
-          <section className="p-6 bg-surface/50 border border-border rounded-xl">
-            <Moodboard
-              apiKey={apiKey}
-              brandData={brandData}
-              onBrandData={handleBrandData}
-              onAuthNeeded={handleLogin}
-            />
-          </section>
+          {/* Accordion cards */}
+          <AccordionCards
+            apiKey={apiKey}
+            brandData={brandData}
+            onBrandData={handleBrandData}
+            onAuthNeeded={handleLogin}
+            model={model}
+            onModelChange={setModel}
+            referenceImages={referenceImages}
+            onReferenceImagesChange={setReferenceImages}
+          />
 
           {/* Generate section */}
           <section className="p-6 bg-surface/50 border border-border rounded-xl">
             <GenerateForm
               apiKey={apiKey}
               brandData={brandData}
+              model={model}
+              referenceImages={referenceImages}
               onResult={setImageResult}
               onLoading={setGenerating}
               onAuthNeeded={handleLogin}

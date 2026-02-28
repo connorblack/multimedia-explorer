@@ -9,6 +9,20 @@ export interface BrandData {
   visualStyle: string[];
   tone: string;
   stylePrompt: string;
+  customSystemPrompt?: string;
+}
+
+export function buildSystemPrompt(data: BrandData): string {
+  return [
+    "The user wants the generated image to match a specific brand identity. Apply the following brand guidelines to the image:",
+    "",
+    `Visual style: ${data.stylePrompt}`,
+    `Color palette: ${data.colors?.join(", ")}`,
+    `Personality: ${data.personality?.join(", ")}`,
+    `Visual descriptors: ${data.visualStyle?.join(", ")}`,
+    "",
+    "Incorporate these brand elements naturally into the image. The user's prompt below describes what to generate — the brand context above describes how it should look and feel.",
+  ].join("\n");
 }
 
 export default function Moodboard({
@@ -26,6 +40,8 @@ export default function Moodboard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState(false);
+  const [promptDraft, setPromptDraft] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,24 +82,12 @@ export default function Moodboard({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-heading font-semibold">Moodboard</h2>
-        {brandData && (
-          <button
-            onClick={() => onBrandData(null)}
-            className="text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter a company URL (e.g. https://stripe.com)"
+          placeholder="Enter a URL (e.g. https://openrouter.ai)"
           className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
         />
         <button
@@ -131,7 +135,7 @@ export default function Moodboard({
           {/* Personality */}
           <div>
             <h3 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
-              Brand Personality
+              Personality
             </h3>
             <div className="flex gap-1.5 flex-wrap">
               {brandData.personality.map((trait, i) => (
@@ -170,14 +174,54 @@ export default function Moodboard({
             <p className="text-sm text-foreground/80">{brandData.tone}</p>
           </div>
 
-          {/* Style prompt */}
+          {/* System prompt */}
           <div>
-            <h3 className="text-xs font-medium text-muted uppercase tracking-wider mb-2">
-              Generated Style Prompt
-            </h3>
-            <p className="text-sm text-accent/90 italic">
-              &ldquo;{brandData.stylePrompt}&rdquo;
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-muted uppercase tracking-wider">
+                Generated System Prompt
+              </h3>
+              {editingPrompt ? (
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => {
+                      onBrandData({ ...brandData, customSystemPrompt: promptDraft });
+                      setEditingPrompt(false);
+                    }}
+                    className="text-xs text-accent hover:text-accent-hover transition-colors cursor-pointer"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingPrompt(false)}
+                    className="text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setPromptDraft(brandData.customSystemPrompt ?? buildSystemPrompt(brandData));
+                    setEditingPrompt(true);
+                  }}
+                  className="text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+            {editingPrompt ? (
+              <textarea
+                value={promptDraft}
+                onChange={(e) => setPromptDraft(e.target.value)}
+                rows={8}
+                className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors resize-y font-mono"
+              />
+            ) : (
+              <p className="text-sm text-foreground/80 whitespace-pre-wrap">
+                {brandData.customSystemPrompt ?? buildSystemPrompt(brandData)}
+              </p>
+            )}
           </div>
         </div>
       )}

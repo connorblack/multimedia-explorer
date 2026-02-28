@@ -2,25 +2,8 @@
 
 import { useState } from "react";
 import type { BrandData } from "./moodboard";
+import type { ReferenceImage } from "@/lib/types";
 import AuthPrompt from "./auth-prompt";
-
-const MODELS = [
-  { id: "google/gemini-3.1-flash-image-preview", label: "Nano Banana 2 (Gemini 3.1 Flash)" },
-  { id: "google/gemini-3-pro-image-preview", label: "Nano Banana Pro (Gemini 3 Pro)" },
-  { id: "google/gemini-2.5-flash-image", label: "Nano Banana (Gemini 2.5 Flash)" },
-  { id: "openai/gpt-5-image", label: "GPT-5 Image" },
-  { id: "openai/gpt-5-image-mini", label: "GPT-5 Image Mini" },
-  { id: "black-forest-labs/flux.2-max", label: "FLUX.2 Max" },
-  { id: "black-forest-labs/flux.2-pro", label: "FLUX.2 Pro" },
-  { id: "black-forest-labs/flux.2-flex", label: "FLUX.2 Flex" },
-  { id: "black-forest-labs/flux.2-klein-4b", label: "FLUX.2 Klein 4B" },
-  { id: "bytedance-seed/seedream-4.5", label: "Seedream 4.5" },
-  { id: "sourceful/riverflow-v2-pro", label: "Riverflow V2 Pro" },
-  { id: "sourceful/riverflow-v2-fast", label: "Riverflow V2 Fast" },
-  { id: "sourceful/riverflow-v2-max-preview", label: "Riverflow V2 Max Preview" },
-  { id: "sourceful/riverflow-v2-standard-preview", label: "Riverflow V2 Standard Preview" },
-  { id: "sourceful/riverflow-v2-fast-preview", label: "Riverflow V2 Fast Preview" },
-];
 
 const ASPECT_RATIOS = ["1:1", "16:9", "9:16", "4:3", "3:2"];
 const RESOLUTIONS = ["1K", "2K"];
@@ -28,18 +11,21 @@ const RESOLUTIONS = ["1K", "2K"];
 export default function GenerateForm({
   apiKey,
   brandData,
+  model,
+  referenceImages,
   onResult,
   onLoading,
   onAuthNeeded,
 }: {
   apiKey: string | null;
   brandData: BrandData | null;
+  model: string;
+  referenceImages: ReferenceImage[];
   onResult: (result: { imageUrl: string; model: string } | null) => void;
   onLoading: (loading: boolean) => void;
   onAuthNeeded: (key: string) => void;
 }) {
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState(MODELS[0].id);
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [resolution, setResolution] = useState("1K");
   const [loading, setLoadingState] = useState(false);
@@ -74,6 +60,9 @@ export default function GenerateForm({
           model,
           aspectRatio,
           resolution,
+          referenceImages: referenceImages.length > 0
+            ? referenceImages.map((img) => img.url)
+            : undefined,
         }),
       });
 
@@ -118,24 +107,6 @@ export default function GenerateForm({
             <p className="text-sm text-accent/90 italic">&ldquo;{brandData.stylePrompt}&rdquo;</p>
           </div>
         )}
-
-        {/* Model selector */}
-        <div>
-          <label className="block text-xs font-medium text-muted uppercase tracking-wider mb-1.5">
-            Model
-          </label>
-          <select
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
-          >
-            {MODELS.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Aspect ratio and resolution */}
         <div className="flex gap-4">

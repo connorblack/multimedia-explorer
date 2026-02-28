@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   }
   const apiKey = authHeader.slice(7);
 
-  const { prompt, brandContext, model, aspectRatio, resolution } = await request.json();
+  const { prompt, brandContext, model, aspectRatio, resolution, referenceImages } = await request.json();
 
   if (!prompt || !model) {
     return NextResponse.json(
@@ -34,31 +34,45 @@ export async function POST(request: NextRequest) {
   const scale = RESOLUTIONS[resolution] || 1;
 
   // Build messages with brand context as a system message when available
+  type ContentPart =
+    | { type: "text"; text: string }
+    | { type: "image_url"; imageUrl: { url: string } };
   const messages: Array<
     | { role: "system"; content: string }
-    | { role: "user"; content: string }
+    | { role: "user"; content: string | ContentPart[] }
   > = [];
 
   if (brandContext) {
+    const systemContent = brandContext.customSystemPrompt ?? [
+      "The user wants the generated image to match a specific brand identity. Apply the following brand guidelines to the image:",
+      "",
+      `Visual style: ${brandContext.stylePrompt}`,
+      `Color palette: ${brandContext.colors?.join(", ")}`,
+      `Personality: ${brandContext.personality?.join(", ")}`,
+      `Visual descriptors: ${brandContext.visualStyle?.join(", ")}`,
+      "",
+      "Incorporate these brand elements naturally into the image. The user's prompt below describes what to generate — the brand context above describes how it should look and feel.",
+    ].join("\n");
+
     messages.push({
       role: "system" as const,
-      content: [
-        "The user wants the generated image to match a specific brand identity. Apply the following brand guidelines to the image:",
-        "",
-        `Visual style: ${brandContext.stylePrompt}`,
-        `Color palette: ${brandContext.colors?.join(", ")}`,
-        `Brand personality: ${brandContext.personality?.join(", ")}`,
-        `Visual descriptors: ${brandContext.visualStyle?.join(", ")}`,
-        "",
-        "Incorporate these brand elements naturally into the image. The user's prompt below describes what to generate — the brand context above describes how it should look and feel.",
-      ].join("\n"),
+      content: systemContent,
     });
   }
 
-  messages.push({
-    role: "user" as const,
-    content: prompt,
-  });
+  // Build user message — multipart when reference images are provided
+  if (Array.isArray(referenceImages) && referenceImages.length > 0) {
+    const contentParts: ContentPart[] = [
+      { type: "text", text: prompt },
+      ...referenceImages.map((url: string) => ({
+        type: "image_url" as const,
+        imageUrl: { url },
+      })),
+    ];
+    messages.push({ role: "user" as const, content: contentParts });
+  } else {
+    messages.push({ role: "user" as const, content: prompt });
+  }
 
   console.log("Generate request:", JSON.stringify({ model, messages, aspectRatio, resolution }, null, 2));
 
