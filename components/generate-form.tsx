@@ -94,6 +94,14 @@ export default function GenerateForm({
             <textarea
               value={prompt}
               onChange={(e) => onPromptChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (prompt.trim() && !loading) {
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }
+              }}
               placeholder="Describe the image you want to generate..."
               rows={3}
               className="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors resize-none"

@@ -1,6 +1,8 @@
 "use client";
 
-import { ASPECT_RATIOS, RESOLUTIONS } from "@/lib/types";
+import { ASPECT_RATIOS, EXTENDED_ASPECT_RATIOS, RESOLUTIONS } from "@/lib/types";
+
+const GEMINI_FLASH_MODEL = "google/gemini-3.1-flash-image-preview";
 
 export function OutputCardHeader({
   aspectRatio,
@@ -22,12 +24,19 @@ export function OutputCardBody({
   onAspectRatioChange,
   resolution,
   onResolutionChange,
+  model,
 }: {
   aspectRatio: string;
   onAspectRatioChange: (ratio: string) => void;
   resolution: string;
   onResolutionChange: (res: string) => void;
+  model: string;
 }) {
+  const showExtended = model === GEMINI_FLASH_MODEL;
+  const ratios = showExtended
+    ? [...ASPECT_RATIOS, ...EXTENDED_ASPECT_RATIOS]
+    : ASPECT_RATIOS;
+
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -35,7 +44,7 @@ export function OutputCardBody({
           Aspect Ratio
         </label>
         <div className="flex gap-1.5 flex-wrap">
-          {ASPECT_RATIOS.map((ratio) => (
+          {ratios.map((ratio) => (
             <button
               key={ratio}
               type="button"

@@ -7,7 +7,7 @@ import AccordionCards from "@/components/accordion-cards";
 import GenerateForm from "@/components/generate-form";
 import ImageResult from "@/components/image-result";
 import HistoryTimeline from "@/components/history-timeline";
-import { MODELS, MOOD_MODELS, type ReferenceImage, type HistoryEntry } from "@/lib/types";
+import { MODELS, MOOD_MODELS, EXTENDED_ASPECT_RATIOS, type ReferenceImage, type HistoryEntry } from "@/lib/types";
 import { saveImage, loadImage, deleteImages, clearAllImages } from "@/lib/history-db";
 
 const HISTORY_KEY = "generation_history";
@@ -112,6 +112,13 @@ export default function Home() {
   function handleMoodModelChange(m: string) {
     setMoodModel(m);
     localStorage.setItem("mood_model", m);
+  }
+
+  function handleModelChange(newModel: string) {
+    setModel(newModel);
+    if (EXTENDED_ASPECT_RATIOS.includes(aspectRatio)) {
+      setAspectRatio("1:1");
+    }
   }
 
   function handleBrandData(data: BrandData | null) {
@@ -291,7 +298,7 @@ export default function Home() {
               moodModel={moodModel}
               onMoodModelChange={handleMoodModelChange}
               model={model}
-              onModelChange={setModel}
+              onModelChange={handleModelChange}
               referenceImages={referenceImages}
               onReferenceImagesChange={setReferenceImages}
               aspectRatio={aspectRatio}

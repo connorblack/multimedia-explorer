@@ -38,7 +38,8 @@ export interface ReferenceImage {
 export type CardId = "mood" | "model" | "inputImages" | "output";
 
 export const ASPECT_RATIOS = ["1:1", "16:9", "9:16", "4:3", "3:2"];
-export const RESOLUTIONS = ["1K", "2K"];
+export const EXTENDED_ASPECT_RATIOS = ["1:4", "4:1", "1:8", "8:1"];
+export const RESOLUTIONS = ["1K", "2K", "4K"];
 
 export interface HistoryEntry {
   id: string;

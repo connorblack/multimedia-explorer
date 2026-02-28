@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/openrouter";
 
 const VALID_ASPECT_RATIOS = new Set(["1:1", "16:9", "9:16", "4:3", "3:2"]);
-const VALID_RESOLUTIONS = new Set(["1K", "2K"]);
+const EXTENDED_ASPECT_RATIOS = new Set(["1:4", "4:1", "1:8", "8:1"]);
+const VALID_RESOLUTIONS = new Set(["1K", "2K", "4K"]);
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -20,7 +21,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validAspect = VALID_ASPECT_RATIOS.has(aspectRatio) ? aspectRatio : "1:1";
+  const isGeminiFlash = model === "google/gemini-3.1-flash-image-preview";
+  const validAspect =
+    VALID_ASPECT_RATIOS.has(aspectRatio) || (isGeminiFlash && EXTENDED_ASPECT_RATIOS.has(aspectRatio))
+      ? aspectRatio
+      : "1:1";
   const validResolution = VALID_RESOLUTIONS.has(resolution) ? resolution : "1K";
 
   // Build messages with brand context as a system message when available

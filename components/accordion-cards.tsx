@@ -77,7 +77,7 @@ export default function AccordionCards({
 
       {/* Expanded body */}
       {expandedCard && (
-        <div className="mt-2 p-4 bg-surface/50 border border-border rounded-lg">
+        <div className="mt-2 pt-4 px-4 pb-2 bg-surface/50 border border-border rounded-lg">
           {expandedCard === "mood" && (
             <MoodCardBody>
               <Moodboard
@@ -105,8 +105,21 @@ export default function AccordionCards({
               onAspectRatioChange={onAspectRatioChange}
               resolution={resolution}
               onResolutionChange={onResolutionChange}
+              model={model}
             />
           )}
+          <div className="flex justify-center mt-3">
+            <button
+              type="button"
+              onClick={() => setExpandedCard(null)}
+              className="p-1.5 rounded-md text-muted hover:text-foreground hover:bg-surface transition-colors"
+              aria-label="Collapse card"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 10L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
     </div>
