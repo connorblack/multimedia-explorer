@@ -330,35 +330,32 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border mt-auto">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-muted">
-          <span>
-            Built with{" "}
+          <span className="flex items-center gap-3">
             <a
               href="https://openrouter.ai"
-              className="text-accent hover:text-accent-hover transition-colors"
+              className="hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
-              OpenRouter
+              Built with OpenRouter
             </a>
-          </span>
-          <span className="flex items-center gap-3">
-            <span>
-              All data is stored on your machine.{" "}
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-400 hover:text-red-300 transition-colors cursor-pointer underline"
-              >
-                Delete Data
-              </button>
-            </span>
             <a
               href="https://github.com/openrouter"
               className="hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
-              GitHub
+              Fork on GitHub
             </a>
+          </span>
+          <span>
+            All data is stored on your machine.{" "}
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="hover:text-foreground transition-colors cursor-pointer underline"
+            >
+              Delete Data
+            </button>
           </span>
         </div>
       </footer>
