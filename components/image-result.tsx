@@ -1,12 +1,21 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 export default function ImageResult({
   result,
   loading,
+  onAddAsInputImage,
 }: {
   result: { imageUrl: string; model: string } | null;
   loading: boolean;
+  onAddAsInputImage?: (url: string) => void;
 }) {
+  const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    if (loading) setAdded(false);
+  }, [loading]);
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
@@ -35,6 +44,22 @@ export default function ImageResult({
         <h2 className="text-lg font-heading font-semibold">Result</h2>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted">{result.model}</span>
+          {onAddAsInputImage && (
+            <button
+              disabled={added}
+              onClick={() => {
+                onAddAsInputImage(result.imageUrl);
+                setAdded(true);
+              }}
+              className={`px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors ${
+                added
+                  ? "border-border text-muted cursor-default"
+                  : "border-border hover:border-accent hover:text-accent cursor-pointer"
+              }`}
+            >
+              {added ? "Added as Input" : "Add as Input Image"}
+            </button>
+          )}
           <button
             onClick={handleDownload}
             className="px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer"

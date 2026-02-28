@@ -100,14 +100,6 @@ export default function GenerateForm({
           />
         </div>
 
-        {/* Brand context indicator */}
-        {brandData && prompt.trim() && (
-          <div className="p-3 bg-accent/5 border border-accent/20 rounded-lg space-y-1">
-            <p className="text-xs text-muted">Brand context will be applied:</p>
-            <p className="text-sm text-accent/90 italic">&ldquo;{brandData.stylePrompt}&rdquo;</p>
-          </div>
-        )}
-
         {/* Aspect ratio and resolution */}
         <div className="flex gap-4">
           <div className="flex-1">

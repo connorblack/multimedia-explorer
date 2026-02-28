@@ -129,7 +129,20 @@ export default function Home() {
           {/* Result section */}
           {(imageResult || generating) && (
             <section className="p-6 bg-surface/50 border border-border rounded-xl">
-              <ImageResult result={imageResult} loading={generating} />
+              <ImageResult
+                result={imageResult}
+                loading={generating}
+                onAddAsInputImage={(url) =>
+                  setReferenceImages((prev) => [
+                    ...prev,
+                    {
+                      id: crypto.randomUUID(),
+                      url,
+                      name: `generation-${Date.now()}.png`,
+                    },
+                  ])
+                }
+              />
             </section>
           )}
         </div>
