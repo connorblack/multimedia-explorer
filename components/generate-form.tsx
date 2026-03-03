@@ -164,7 +164,7 @@ export default function GenerateForm({
             <select
               value={improveModel}
               onChange={(e) => setImproveModel(e.target.value)}
-              className="px-2 py-1.5 bg-surface border border-border rounded-lg text-xs font-medium text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
+              className="px-2 py-1.5 bg-surface border border-border rounded-lg text-xs font-medium text-muted focus:outline-none focus:border-accent transition-colors cursor-pointer"
             >
               {MOOD_MODELS.map((m) => (
                 <option key={m.id} value={m.id}>
