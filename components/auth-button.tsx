@@ -1,10 +1,20 @@
 "use client";
 
 import * as React from "react";
+import { useContext } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { OpenRouterLogo } from "./openrouter-logo";
-import { initiateOAuth } from "@/lib/openrouter-auth";
+
+// Re-use the auth context to auto-wire signIn — import the context directly
+// to avoid a hard requirement on the provider (useOpenRouterAuth throws if missing)
+const AuthContext = React.createContext<{
+  signIn: (callbackUrl?: string) => Promise<void>;
+  isLoading: boolean;
+} | null>(null);
+
+// Expose the context so the provider can supply it
+export { AuthContext as SignInButtonAuthContext };
 
 const signInButtonVariants = cva(
   "inline-flex items-center justify-center gap-2 font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
@@ -47,7 +57,7 @@ export interface SignInButtonProps
   logoPosition?: "left" | "right";
   /** Show loading spinner */
   loading?: boolean;
-  /** onClick handler — defaults to initiating OpenRouter OAuth */
+  /** onClick handler — defaults to initiating OpenRouter OAuth when inside OpenRouterAuthProvider */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -92,15 +102,15 @@ const SignInButton = React.forwardRef<HTMLButtonElement, SignInButtonProps>(
     },
     ref
   ) => {
-    const [internalLoading, setInternalLoading] = React.useState(false);
-    const loading = loadingProp ?? internalLoading;
+    // Auto-wire to auth context if available (no throw if missing)
+    const authCtx = useContext(AuthContext);
+    const loading = loadingProp ?? authCtx?.isLoading ?? false;
 
-    const handleClick: React.MouseEventHandler<HTMLButtonElement> = async (e) => {
+    const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
       if (onClick) {
         onClick(e);
-      } else {
-        setInternalLoading(true);
-        await initiateOAuth();
+      } else if (authCtx) {
+        authCtx.signIn();
       }
     };
 

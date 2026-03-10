@@ -1,15 +1,14 @@
 "use client";
 
-import { initiateOAuth, setApiKey } from "@/lib/openrouter-auth";
+import { useOpenRouterAuth } from "@/hooks/use-openrouter-auth";
+import { setApiKey } from "@/lib/openrouter-auth";
 
 export default function AuthPrompt({
   onDismiss,
 }: {
   onDismiss: () => void;
 }) {
-  async function handleOAuth() {
-    await initiateOAuth();
-  }
+  const { signIn } = useOpenRouterAuth();
 
   function handlePasteKey() {
     const key = prompt("Paste your OpenRouter API key:");
@@ -27,7 +26,7 @@ export default function AuthPrompt({
       <div className="flex gap-2 flex-wrap">
         <button
           type="button"
-          onClick={handleOAuth}
+          onClick={() => signIn()}
           className="px-4 py-2 text-sm font-medium bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors cursor-pointer"
         >
           Sign in with OpenRouter

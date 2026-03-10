@@ -2,14 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { SignInButton } from "@/components/auth-button";
-import {
-  getApiKey,
-  setApiKey,
-  clearApiKey,
-  onAuthChange,
-  hasOAuthCallbackPending,
-  handleOAuthCallback,
-} from "@/lib/openrouter-auth";
+import { useOpenRouterAuth } from "@/hooks/use-openrouter-auth";
 import type { BrandData } from "@/components/moodboard";
 import AccordionCards from "@/components/accordion-cards";
 import GenerateForm from "@/components/generate-form";
@@ -40,7 +33,9 @@ function stripDataUrls(images: ReferenceImage[]): ReferenceImage[] {
 }
 
 export default function Home() {
-  const [apiKey, setApiKeyState] = useState<string | null>(null);
+  const { apiKey: authApiKey, signOut } = useOpenRouterAuth();
+  const envKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY ?? null;
+  const apiKey = envKey || authApiKey;
   const [brandData, setBrandData] = useState<BrandData | null>(null);
   const [moodModel, setMoodModel] = useState(MOOD_MODELS[0].id);
   const [model, setModel] = useState(MODELS[0].id);
@@ -70,37 +65,6 @@ export default function Home() {
   } | null>(null);
 
   useEffect(() => {
-    // Handle OAuth callback inline (check ?code= on mount)
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    if (code && hasOAuthCallbackPending()) {
-      handleOAuthCallback(code)
-        .catch((err) => console.error("OAuth callback failed:", err))
-        .finally(() => {
-          // Clean URL
-          window.history.replaceState({}, "", window.location.pathname);
-        });
-    }
-
-    // Init API key from env or storage
-    const envKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
-    if (envKey) {
-      setApiKeyState(envKey);
-    } else {
-      const storedKey = getApiKey();
-      if (storedKey) setApiKeyState(storedKey);
-    }
-
-    // Subscribe to auth changes (including multi-tab sync)
-    const unsubscribe = onAuthChange(() => {
-      const key = getApiKey();
-      setApiKeyState(key);
-      if (!key) {
-        setBrandData(null);
-        setImageResult(null);
-      }
-    });
-
     if (!localStorage.getItem("has_seen_intro")) {
       setShowWhatIsThis(true);
     }
@@ -133,7 +97,6 @@ export default function Home() {
       } catch {}
     }
 
-    return unsubscribe;
   }, []);
 
   function dismissIntro() {
@@ -154,7 +117,7 @@ export default function Home() {
   }
 
   function handleLogout() {
-    clearApiKey();
+    signOut();
   }
 
   function handleMoodModelChange(m: string) {
@@ -179,8 +142,8 @@ export default function Home() {
   }
 
   function handleDeleteAllData() {
-    // Clear auth via module (notifies listeners / other tabs)
-    clearApiKey();
+    // Clear auth via hook (notifies listeners / other tabs)
+    signOut();
 
     // Clear other localStorage
     localStorage.removeItem("moodboard_data");
@@ -191,7 +154,6 @@ export default function Home() {
     clearAllImages().catch(console.error);
 
     // Reset all state
-    setApiKeyState(null);
     setBrandData(null);
     setMoodModel(MOOD_MODELS[0].id);
     setModel(MODELS[0].id);

@@ -107,3 +107,21 @@ export async function handleOAuthCallback(code: string): Promise<void> {
   const { key } = await res.json();
   setApiKey(key);
 }
+
+/**
+ * Get the authenticated user's email from OpenRouter.
+ *
+ * @experimental This endpoint is undocumented and may change.
+ */
+export async function getUserEmail(apiKey: string): Promise<string | null> {
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/auth/user", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.email ?? null;
+  } catch {
+    return null;
+  }
+}
