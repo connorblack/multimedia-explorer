@@ -1,9 +1,15 @@
 "use client";
 
-import { MODELS, VIDEO_MODELS } from "@/lib/types";
+import type { ModelOption } from "@/hooks/use-models";
 
-export function ModelCardHeader({ model }: { model: string }) {
-  const selected = MODELS.find((m) => m.id === model);
+export function ModelCardHeader({
+  model,
+  imageModels,
+}: {
+  model: string;
+  imageModels: ModelOption[];
+}) {
+  const selected = imageModels.find((m) => m.id === model);
   return (
     <div>
       <div className="text-sm font-medium">Select Image or Video Model</div>
@@ -15,9 +21,15 @@ export function ModelCardHeader({ model }: { model: string }) {
 export function ModelCardBody({
   model,
   onModelChange,
+  imageModels,
+  videoModels,
+  loading,
 }: {
   model: string;
   onModelChange: (model: string) => void;
+  imageModels: ModelOption[];
+  videoModels: ModelOption[];
+  loading: boolean;
 }) {
   return (
     <div>
@@ -28,18 +40,24 @@ export function ModelCardBody({
         <select
           value={model}
           onChange={(e) => onModelChange(e.target.value)}
-          className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
+          disabled={loading}
+          className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer disabled:opacity-50"
         >
-          <optgroup label="Image Models">
-            {MODELS.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
+          {loading && <option>Loading models…</option>}
+          <optgroup label={videoModels.length === 0 ? "Video Models (Coming Soon)" : "Video Models"}>
+            {videoModels.length === 0 ? (
+              <option disabled>Coming soon</option>
+            ) : (
+              videoModels.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))
+            )}
           </optgroup>
-          <optgroup label="Video Models (Coming Soon)">
-            {VIDEO_MODELS.map((m) => (
-              <option key={m.id} value={m.id} disabled>
+          <optgroup label="Image Models">
+            {imageModels.map((m) => (
+              <option key={m.id} value={m.id}>
                 {m.label}
               </option>
             ))}

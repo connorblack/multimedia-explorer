@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CardId, ReferenceImage } from "@/lib/types";
+import type { ModelOption } from "@/hooks/use-models";
 import type { BrandData } from "./moodboard";
 import Moodboard from "./moodboard";
 import { MoodCardHeader, MoodCardBody } from "./cards/mood-card";
@@ -17,6 +18,9 @@ export default function AccordionCards({
   onMoodModelChange,
   model,
   onModelChange,
+  imageModels,
+  videoModels,
+  modelsLoading,
   referenceImages,
   onReferenceImagesChange,
   aspectRatio,
@@ -31,6 +35,9 @@ export default function AccordionCards({
   onMoodModelChange: (model: string) => void;
   model: string;
   onModelChange: (model: string) => void;
+  imageModels: ModelOption[];
+  videoModels: ModelOption[];
+  modelsLoading: boolean;
   referenceImages: ReferenceImage[];
   onReferenceImagesChange: (images: ReferenceImage[]) => void;
   aspectRatio: string;
@@ -54,7 +61,7 @@ export default function AccordionCards({
     <div className="space-y-2">
       {/* Model card — full width, always visible */}
       <div className="px-4 py-4 bg-surface/50 border border-border rounded-lg">
-        <ModelCardBody model={model} onModelChange={onModelChange} />
+        <ModelCardBody model={model} onModelChange={onModelChange} imageModels={imageModels} videoModels={videoModels} loading={modelsLoading} />
       </div>
 
       {/* Remaining card headers row */}

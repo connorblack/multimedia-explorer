@@ -9,12 +9,12 @@ import GenerateForm from "@/components/generate-form";
 import ImageResult from "@/components/image-result";
 import HistoryTimeline from "@/components/history-timeline";
 import {
-  MODELS,
   MOOD_MODELS,
   EXTENDED_ASPECT_RATIOS,
   type ReferenceImage,
   type HistoryEntry,
 } from "@/lib/types";
+import { useModels } from "@/hooks/use-models";
 import {
   saveImage,
   loadImage,
@@ -36,9 +36,10 @@ export default function Home() {
   const { apiKey: authApiKey, signOut } = useOpenRouterAuth();
   const envKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY ?? null;
   const apiKey = envKey || authApiKey;
+  const { imageModels, videoModels, loading: modelsLoading } = useModels();
   const [brandData, setBrandData] = useState<BrandData | null>(null);
   const [moodModel, setMoodModel] = useState(MOOD_MODELS[0].id);
-  const [model, setModel] = useState(MODELS[0].id);
+  const [model, setModel] = useState("");
   const [referenceImages, setReferenceImages] = useState<ReferenceImage[]>([]);
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [resolution, setResolution] = useState("1K");
@@ -63,6 +64,13 @@ export default function Home() {
     resolution: string;
     imageResult: { imageUrl: string; model: string } | null;
   } | null>(null);
+
+  // Auto-select first image model once loaded (if no model set yet)
+  useEffect(() => {
+    if (!model && imageModels.length > 0) {
+      setModel(imageModels[0].id);
+    }
+  }, [imageModels, model]);
 
   useEffect(() => {
     if (!localStorage.getItem("has_seen_intro")) {
@@ -156,7 +164,7 @@ export default function Home() {
     // Reset all state
     setBrandData(null);
     setMoodModel(MOOD_MODELS[0].id);
-    setModel(MODELS[0].id);
+    setModel(imageModels[0]?.id ?? "");
     setReferenceImages([]);
     setAspectRatio("1:1");
     setResolution("1K");
@@ -336,6 +344,9 @@ export default function Home() {
               onMoodModelChange={handleMoodModelChange}
               model={model}
               onModelChange={handleModelChange}
+              imageModels={imageModels}
+              videoModels={videoModels}
+              modelsLoading={modelsLoading}
               referenceImages={referenceImages}
               onReferenceImagesChange={setReferenceImages}
               aspectRatio={aspectRatio}
