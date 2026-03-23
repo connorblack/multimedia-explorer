@@ -27,6 +27,11 @@ export default function AccordionCards({
   onAspectRatioChange,
   resolution,
   onResolutionChange,
+  isVideoModel,
+  duration,
+  onDurationChange,
+  generateAudio,
+  onGenerateAudioChange,
 }: {
   apiKey: string | null;
   brandData: BrandData | null;
@@ -44,6 +49,11 @@ export default function AccordionCards({
   onAspectRatioChange: (ratio: string) => void;
   resolution: string;
   onResolutionChange: (res: string) => void;
+  isVideoModel: boolean;
+  duration: number;
+  onDurationChange: (d: number) => void;
+  generateAudio: boolean;
+  onGenerateAudioChange: (v: boolean) => void;
 }) {
   const [expandedCard, setExpandedCard] = useState<CardId | null>(null);
 
@@ -54,7 +64,17 @@ export default function AccordionCards({
   const cards: { id: CardId; header: React.ReactNode }[] = [
     { id: "mood", header: <MoodCardHeader brandData={brandData} /> },
     { id: "inputImages", header: <ReferencesCardHeader images={referenceImages} /> },
-    { id: "output", header: <OutputCardHeader aspectRatio={aspectRatio} resolution={resolution} /> },
+    {
+      id: "output",
+      header: (
+        <OutputCardHeader
+          aspectRatio={aspectRatio}
+          resolution={resolution}
+          isVideoModel={isVideoModel}
+          duration={duration}
+        />
+      ),
+    },
   ];
 
   return (
@@ -111,6 +131,11 @@ export default function AccordionCards({
               resolution={resolution}
               onResolutionChange={onResolutionChange}
               model={model}
+              isVideoModel={isVideoModel}
+              duration={duration}
+              onDurationChange={onDurationChange}
+              generateAudio={generateAudio}
+              onGenerateAudioChange={onGenerateAudioChange}
             />
           )}
           <div className="flex justify-center mt-3">

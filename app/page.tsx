@@ -13,8 +13,10 @@ import {
   EXTENDED_ASPECT_RATIOS,
   type ReferenceImage,
   type HistoryEntry,
+  type MediaResult,
 } from "@/lib/types";
 import { useModels } from "@/hooks/use-models";
+import { useVideoGeneration } from "@/hooks/use-video-generation";
 import {
   saveImage,
   loadImage,
@@ -44,14 +46,35 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [resolution, setResolution] = useState("1K");
   const [prompt, setPrompt] = useState("");
-  const [imageResult, setImageResult] = useState<{
-    imageUrl: string;
-    model: string;
-  } | null>(null);
+  const [mediaResult, setMediaResult] = useState<MediaResult | null>(null);
   const [generating, setGenerating] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showWhatIsThis, setShowWhatIsThis] = useState(false);
+  const [duration, setDuration] = useState(5);
+  const [generateAudio, setGenerateAudio] = useState(false);
+
+  const isVideoModel = videoModels.some((m) => m.id === model);
+
+  const {
+    state: videoState,
+    submit: submitVideo,
+    reset: resetVideo,
+  } = useVideoGeneration(apiKey);
+
+  // When video generation completes, set the result
+  useEffect(() => {
+    if (videoState.status === "completed" && videoState.videoUrl) {
+      const result: MediaResult = {
+        type: "video",
+        videoUrl: videoState.videoUrl,
+        model: videoState.model ?? model,
+      };
+      setMediaResult(result);
+      handleVideoResult(result);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoState.status, videoState.videoUrl]);
 
   // Snapshot of "current" working state to return to after browsing history
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
@@ -62,7 +85,7 @@ export default function Home() {
     referenceImages: ReferenceImage[];
     aspectRatio: string;
     resolution: string;
-    imageResult: { imageUrl: string; model: string } | null;
+    mediaResult: MediaResult | null;
   } | null>(null);
 
   // Auto-select first image model once loaded (if no model set yet)
@@ -96,11 +119,12 @@ export default function Home() {
         // Hydrate imageUrl from IndexedDB in background
         Promise.all(
           parsed.map(async (entry) => {
+            if (entry.mediaType === "video") return entry; // Videos aren't persisted
             const url = await loadImage(entry.id);
             return { ...entry, imageUrl: url ?? undefined };
           }),
         ).then((hydrated) => {
-          setHistory(hydrated.filter((e) => e.imageUrl));
+          setHistory(hydrated.filter((e) => e.imageUrl || e.mediaType === "video"));
         });
       } catch {}
     }
@@ -134,8 +158,24 @@ export default function Home() {
   }
 
   function handleModelChange(newModel: string) {
+    const wasVideo = isVideoModel;
+    const willBeVideo = videoModels.some((m) => m.id === newModel);
+
     setModel(newModel);
-    if (EXTENDED_ASPECT_RATIOS.includes(aspectRatio)) {
+
+    // Reset output settings when switching between image and video
+    if (wasVideo !== willBeVideo) {
+      if (willBeVideo) {
+        setAspectRatio("16:9");
+        setResolution("1080p");
+      } else {
+        setAspectRatio("1:1");
+        setResolution("1K");
+      }
+      resetVideo();
+    }
+
+    if (!willBeVideo && EXTENDED_ASPECT_RATIOS.includes(aspectRatio)) {
       setAspectRatio("1:1");
     }
   }
@@ -169,17 +209,41 @@ export default function Home() {
     setAspectRatio("1:1");
     setResolution("1K");
     setPrompt("");
-    setImageResult(null);
+    setMediaResult(null);
     setGenerating(false);
     setHistory([]);
     setSavedCurrent(null);
     setShowDeleteConfirm(false);
+    resetVideo();
+  }
+
+  function handleVideoResult(result: MediaResult) {
+    // Clear any saved "current" snapshot since we have a new generation
+    setSavedCurrent(null);
+
+    const id = crypto.randomUUID();
+    const entry: HistoryEntry = {
+      id,
+      timestamp: Date.now(),
+      model: result.model,
+      prompt: prompt.trim(),
+      brandData,
+      referenceImages,
+      aspectRatio,
+      resolution,
+      mediaType: "video",
+      duration,
+      generateAudio,
+    };
+
+    const newHistory = [entry, ...history].slice(0, MAX_HISTORY);
+    persistHistory(newHistory);
   }
 
   const handleResult = useCallback(
-    (result: { imageUrl: string; model: string } | null) => {
-      setImageResult(result);
-      if (result) {
+    (result: MediaResult | null) => {
+      setMediaResult(result);
+      if (result && result.type === "image") {
         // Clear any saved "current" snapshot since we have a new generation
         setSavedCurrent(null);
 
@@ -194,6 +258,7 @@ export default function Home() {
           referenceImages,
           aspectRatio,
           resolution,
+          mediaType: "image",
         };
 
         const newHistory = [entry, ...history].slice(0, MAX_HISTORY);
@@ -213,8 +278,21 @@ export default function Home() {
     [prompt, brandData, referenceImages, aspectRatio, resolution, history],
   );
 
+  function handleVideoSubmit(params: {
+    model: string;
+    prompt: string;
+    aspect_ratio: string;
+    duration: number;
+    resolution: string;
+    generate_audio: boolean;
+    input_references?: Array<{ type: "image_url"; image_url: { url: string } }>;
+  }) {
+    setMediaResult(null);
+    submitVideo(params);
+  }
+
   function handleSelectHistory(entry: HistoryEntry) {
-    if (!entry.imageUrl) return;
+    if (!entry.imageUrl && entry.mediaType !== "video") return;
 
     // Save current working state on first history browse
     if (!savedCurrent) {
@@ -225,7 +303,7 @@ export default function Home() {
         referenceImages,
         aspectRatio,
         resolution,
-        imageResult,
+        mediaResult,
       });
     }
 
@@ -235,7 +313,13 @@ export default function Home() {
     setReferenceImages(entry.referenceImages);
     setAspectRatio(entry.aspectRatio);
     setResolution(entry.resolution);
-    setImageResult({ imageUrl: entry.imageUrl, model: entry.model });
+
+    if (entry.mediaType === "video") {
+      // Video results aren't persisted — show metadata only
+      setMediaResult(null);
+    } else if (entry.imageUrl) {
+      setMediaResult({ type: "image", imageUrl: entry.imageUrl, model: entry.model });
+    }
     setActiveHistoryId(entry.id);
   }
 
@@ -247,11 +331,18 @@ export default function Home() {
       setReferenceImages(savedCurrent.referenceImages);
       setAspectRatio(savedCurrent.aspectRatio);
       setResolution(savedCurrent.resolution);
-      setImageResult(savedCurrent.imageResult);
+      setMediaResult(savedCurrent.mediaResult);
       setSavedCurrent(null);
       setActiveHistoryId(null);
     }
   }
+
+  const isVideoGenerating =
+    videoState.status === "submitting" ||
+    videoState.status === "pending" ||
+    videoState.status === "in_progress";
+
+  const showResult = mediaResult || generating || isVideoGenerating || videoState.status === "failed";
 
   return (
     <div className="min-h-screen bg-background">
@@ -353,6 +444,11 @@ export default function Home() {
               onAspectRatioChange={setAspectRatio}
               resolution={resolution}
               onResolutionChange={setResolution}
+              isVideoModel={isVideoModel}
+              duration={duration}
+              onDurationChange={setDuration}
+              generateAudio={generateAudio}
+              onGenerateAudioChange={setGenerateAudio}
             />
 
             {/* Generate section */}
@@ -368,15 +464,21 @@ export default function Home() {
                 onPromptChange={setPrompt}
                 onResult={handleResult}
                 onLoading={setGenerating}
+                isVideoModel={isVideoModel}
+                duration={duration}
+                generateAudio={generateAudio}
+                onVideoSubmit={handleVideoSubmit}
               />
             </section>
 
             {/* Result section */}
-            {(imageResult || generating) && (
+            {showResult && (
               <section className="p-6 bg-surface/50 border border-border rounded-xl">
                 <ImageResult
-                  result={imageResult}
+                  result={mediaResult}
                   loading={generating}
+                  videoStatus={isVideoGenerating || videoState.status === "failed" ? videoState.status : undefined}
+                  videoError={videoState.error}
                   onAddAsInputImage={(url) =>
                     setReferenceImages((prev) => [
                       ...prev,

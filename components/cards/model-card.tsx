@@ -5,11 +5,13 @@ import type { ModelOption } from "@/hooks/use-models";
 export function ModelCardHeader({
   model,
   imageModels,
+  videoModels,
 }: {
   model: string;
   imageModels: ModelOption[];
+  videoModels?: ModelOption[];
 }) {
-  const selected = imageModels.find((m) => m.id === model);
+  const selected = [...imageModels, ...(videoModels ?? [])].find((m) => m.id === model);
   return (
     <div>
       <div className="text-sm font-medium">Select Image or Video Model</div>
@@ -44,9 +46,9 @@ export function ModelCardBody({
           className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer disabled:opacity-50"
         >
           {loading && <option>Loading models…</option>}
-          <optgroup label={videoModels.length === 0 ? "Video Models (Coming Soon)" : "Video Models"}>
+          <optgroup label="Video Models">
             {videoModels.length === 0 ? (
-              <option disabled>Coming soon</option>
+              <option disabled>No video models available</option>
             ) : (
               videoModels.map((m) => (
                 <option key={m.id} value={m.id}>

@@ -23,6 +23,14 @@ export const ASPECT_RATIOS = ["1:1", "16:9", "9:16", "4:3", "3:2"];
 export const EXTENDED_ASPECT_RATIOS = ["1:4", "4:1", "1:8", "8:1"];
 export const RESOLUTIONS = ["1K", "2K", "4K"];
 
+export const VIDEO_ASPECT_RATIOS = ["16:9", "9:16", "1:1"];
+export const VIDEO_RESOLUTIONS = ["480p", "720p", "1080p"];
+export const VIDEO_DURATIONS = [5, 10, 15];
+
+export type MediaResult =
+  | { type: "image"; imageUrl: string; model: string }
+  | { type: "video"; videoUrl: string; model: string };
+
 export interface HistoryEntry {
   id: string;
   timestamp: number;
@@ -34,4 +42,7 @@ export interface HistoryEntry {
   referenceImages: ReferenceImage[];
   aspectRatio: string;
   resolution: string;
+  mediaType?: "image" | "video";
+  duration?: number;
+  generateAudio?: boolean;
 }

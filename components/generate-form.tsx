@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { BrandData } from "./moodboard";
-import type { ReferenceImage } from "@/lib/types";
+import type { ReferenceImage, MediaResult } from "@/lib/types";
 import { MOOD_MODELS } from "@/lib/types";
 import AuthPrompt from "./auth-prompt";
 
@@ -17,6 +17,10 @@ export default function GenerateForm({
   onPromptChange,
   onResult,
   onLoading,
+  isVideoModel,
+  duration,
+  generateAudio,
+  onVideoSubmit,
 }: {
   apiKey: string | null;
   brandData: BrandData | null;
@@ -26,8 +30,20 @@ export default function GenerateForm({
   resolution: string;
   prompt: string;
   onPromptChange: (prompt: string) => void;
-  onResult: (result: { imageUrl: string; model: string } | null) => void;
+  onResult: (result: MediaResult | null) => void;
   onLoading: (loading: boolean) => void;
+  isVideoModel: boolean;
+  duration: number;
+  generateAudio: boolean;
+  onVideoSubmit: (params: {
+    model: string;
+    prompt: string;
+    aspect_ratio: string;
+    duration: number;
+    resolution: string;
+    generate_audio: boolean;
+    input_references?: Array<{ type: "image_url"; image_url: { url: string } }>;
+  }) => void;
 }) {
   const [loading, setLoadingState] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +62,33 @@ export default function GenerateForm({
     }
 
     setShowAuthPrompt(false);
+    setError(null);
+
+    if (isVideoModel) {
+      // Video: delegate to parent's video submission handler
+      const inputRefs =
+        referenceImages.length > 0
+          ? referenceImages.map((img) => ({
+              type: "image_url" as const,
+              image_url: { url: img.url },
+            }))
+          : undefined;
+
+      onVideoSubmit({
+        model,
+        prompt: prompt.trim(),
+        aspect_ratio: aspectRatio,
+        duration,
+        resolution,
+        generate_audio: generateAudio,
+        input_references: inputRefs,
+      });
+      return;
+    }
+
+    // Image generation (existing flow)
     setLoadingState(true);
     onLoading(true);
-    setError(null);
     onResult(null);
 
     try {
@@ -76,7 +116,7 @@ export default function GenerateForm({
         throw new Error(data.error || "Failed to generate image");
       }
 
-      onResult({ imageUrl: data.imageUrl, model: data.model });
+      onResult({ type: "image", imageUrl: data.imageUrl, model: data.model });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -131,9 +171,11 @@ export default function GenerateForm({
     }
   }
 
+  const mediaType = isVideoModel ? "Video" : "Image";
+
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-heading font-semibold">Generate Image</h2>
+      <h2 className="text-lg font-heading font-semibold">Generate {mediaType}</h2>
 
       <form onSubmit={handleGenerate} className="space-y-3">
         {/* Prompt textarea */}
@@ -152,7 +194,11 @@ export default function GenerateForm({
               }
             }
           }}
-          placeholder="Describe the image you want to generate..."
+          placeholder={
+            isVideoModel
+              ? "Describe the video you want to generate..."
+              : "Describe the image you want to generate..."
+          }
           rows={3}
           className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors resize-none"
         />
@@ -215,7 +261,7 @@ export default function GenerateForm({
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5Z" />
                 </svg>
-                Generate
+                Generate {mediaType}
               </>
             )}
           </button>
