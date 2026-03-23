@@ -100,7 +100,15 @@ export function useVideoGeneration(apiKey: string | null) {
           return;
         }
 
-        const jobId = data.id as string;
+        const jobId = data.id as string | undefined;
+        if (!jobId) {
+          setState((s) => ({
+            ...s,
+            status: "failed",
+            error: "No job ID returned from video submission",
+          }));
+          return;
+        }
         setState((s) => ({ ...s, status: "pending", jobId }));
 
         // Start polling

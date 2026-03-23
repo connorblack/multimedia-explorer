@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     });
 
     const data = await res.json();
+    console.log("OpenRouter video submit response:", res.status, JSON.stringify(data));
 
     if (!res.ok) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data, { status: 202 });
+    return NextResponse.json(data);
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to submit video generation" },

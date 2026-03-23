@@ -1,14 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { MediaResult } from "@/lib/types";
 import type { VideoStatus } from "@/hooks/use-video-generation";
 
-const VIDEO_STATUS_MESSAGES: Record<string, string> = {
-  submitting: "Submitting video job…",
-  pending: "Video queued for processing…",
-  in_progress: "Generating your video…",
-};
+function ElapsedTime() {
+  const startRef = useRef(Date.now());
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    startRef.current = Date.now();
+    const timer = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return <span className="tabular-nums">{elapsed}s</span>;
+}
 
 export default function ImageResult({
   result,
@@ -35,14 +44,27 @@ export default function ImageResult({
     videoStatus === "in_progress";
 
   if (loading || isVideoGenerating) {
-    const message = isVideoGenerating
-      ? VIDEO_STATUS_MESSAGES[videoStatus!] ?? "Generating…"
-      : "Generating your image…";
+    const statusSubtext: Record<string, string> = {
+      submitting: "Submitting video job…",
+      pending: "Queued for processing",
+      in_progress: "Generation in progress",
+    };
 
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
         <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-muted">{message}</p>
+        {isVideoGenerating ? (
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm text-muted">
+              Video is being generated… <ElapsedTime />
+            </p>
+            <p className="text-xs text-muted/60">
+              {statusSubtext[videoStatus!] ?? ""}
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted">Generating your image…</p>
+        )}
       </div>
     );
   }
