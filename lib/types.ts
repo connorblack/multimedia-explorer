@@ -23,17 +23,49 @@ export const ASPECT_RATIOS = ["1:1", "16:9", "9:16", "4:3", "3:2"];
 export const EXTENDED_ASPECT_RATIOS = ["1:4", "4:1", "1:8", "8:1"];
 export const RESOLUTIONS = ["1K", "2K", "4K"];
 
+/** Default fallbacks for unknown video models */
 export const VIDEO_ASPECT_RATIOS = ["16:9", "9:16", "1:1"];
-export const VIDEO_RESOLUTIONS = ["480p", "720p", "1080p"];
-
-/** Models that don't support 480p resolution */
-export const NO_480P_MODELS = ["google/veo-3.1"];
+export const VIDEO_RESOLUTIONS = ["720p", "1080p"];
 export const VIDEO_DURATIONS = [5, 10, 15];
 
-/** Model-specific duration overrides */
-export const MODEL_DURATIONS: Record<string, number[]> = {
-  "google/veo-3.1": [4, 6, 8],
+/** Per-model supported parameter values (from OpenRouter beta docs) */
+export interface VideoModelConfig {
+  durations: number[];
+  resolutions: string[];
+  aspectRatios: string[];
+  supportsAudio: boolean;
+}
+
+export const VIDEO_MODEL_CONFIGS: Record<string, VideoModelConfig> = {
+  "google/veo-3.1": {
+    durations: [4, 6, 8],
+    resolutions: ["720p", "1080p", "4K"],
+    aspectRatios: ["16:9", "9:16"],
+    supportsAudio: true,
+  },
+  "openai/sora-2-pro": {
+    durations: [4, 8, 12, 16, 20],
+    resolutions: ["720p", "1080p"],
+    aspectRatios: ["16:9", "9:16"],
+    supportsAudio: true,
+  },
+  "bytedance/seedance-1-5-pro": {
+    durations: [4, 5, 6, 7, 8, 9, 10, 11, 12],
+    resolutions: ["480p", "720p", "1080p"],
+    aspectRatios: ["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"],
+    supportsAudio: true,
+  },
 };
+
+/** Get video config for a model, falling back to defaults */
+export function getVideoConfig(model: string): VideoModelConfig {
+  return VIDEO_MODEL_CONFIGS[model] ?? {
+    durations: VIDEO_DURATIONS,
+    resolutions: VIDEO_RESOLUTIONS,
+    aspectRatios: VIDEO_ASPECT_RATIOS,
+    supportsAudio: false,
+  };
+}
 
 export type MediaResult =
   | { type: "image"; imageUrl: string; model: string }

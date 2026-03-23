@@ -11,8 +11,7 @@ import HistoryTimeline from "@/components/history-timeline";
 import {
   MOOD_MODELS,
   EXTENDED_ASPECT_RATIOS,
-  VIDEO_DURATIONS,
-  MODEL_DURATIONS,
+  getVideoConfig,
   type ReferenceImage,
   type HistoryEntry,
   type MediaResult,
@@ -168,21 +167,21 @@ export default function Home() {
     // Reset output settings when switching between image and video
     if (wasVideo !== willBeVideo) {
       if (willBeVideo) {
-        setAspectRatio("16:9");
-        setResolution("1080p");
-        const durations = MODEL_DURATIONS[newModel] ?? VIDEO_DURATIONS;
-        setDuration(durations[0]);
+        const config = getVideoConfig(newModel);
+        setAspectRatio(config.aspectRatios[0]);
+        setResolution(config.resolutions.includes("1080p") ? "1080p" : config.resolutions[0]);
+        setDuration(config.durations[0]);
       } else {
         setAspectRatio("1:1");
         setResolution("1K");
       }
       resetVideo();
     } else if (willBeVideo) {
-      // Switching between video models — reset duration if current is invalid
-      const durations = MODEL_DURATIONS[newModel] ?? VIDEO_DURATIONS;
-      if (!durations.includes(duration)) {
-        setDuration(durations[0]);
-      }
+      // Switching between video models — reset to valid values for new model
+      const config = getVideoConfig(newModel);
+      if (!config.durations.includes(duration)) setDuration(config.durations[0]);
+      if (!config.resolutions.includes(resolution)) setResolution(config.resolutions.includes("1080p") ? "1080p" : config.resolutions[0]);
+      if (!config.aspectRatios.includes(aspectRatio)) setAspectRatio(config.aspectRatios[0]);
     }
 
     if (!willBeVideo && EXTENDED_ASPECT_RATIOS.includes(aspectRatio)) {

@@ -4,15 +4,10 @@ import {
   ASPECT_RATIOS,
   EXTENDED_ASPECT_RATIOS,
   RESOLUTIONS,
-  VIDEO_ASPECT_RATIOS,
-  VIDEO_RESOLUTIONS,
-  VIDEO_DURATIONS,
-  NO_480P_MODELS,
-  MODEL_DURATIONS,
+  getVideoConfig,
 } from "@/lib/types";
 
 const GEMINI_FLASH_MODEL = "google/gemini-3.1-flash-image-preview";
-const VEO_MODEL = "google/veo-3.1";
 
 export function OutputCardHeader({
   aspectRatio,
@@ -59,18 +54,15 @@ export function OutputCardBody({
   generateAudio?: boolean;
   onGenerateAudioChange?: (v: boolean) => void;
 }) {
+  const videoConfig = isVideoModel ? getVideoConfig(model) : null;
+
   const showExtended = !isVideoModel && model === GEMINI_FLASH_MODEL;
-  const ratios = isVideoModel
-    ? VIDEO_ASPECT_RATIOS
+  const ratios = videoConfig
+    ? videoConfig.aspectRatios
     : showExtended
       ? [...ASPECT_RATIOS, ...EXTENDED_ASPECT_RATIOS]
       : ASPECT_RATIOS;
-  const resolutions = isVideoModel
-    ? NO_480P_MODELS.includes(model)
-      ? VIDEO_RESOLUTIONS.filter((r) => r !== "480p")
-      : VIDEO_RESOLUTIONS
-    : RESOLUTIONS;
-  const showAudioToggle = isVideoModel && model === VEO_MODEL;
+  const resolutions = videoConfig ? videoConfig.resolutions : RESOLUTIONS;
 
   return (
     <div className="space-y-4">
@@ -120,14 +112,14 @@ export function OutputCardBody({
         </div>
       </div>
 
-      {isVideoModel && (
+      {videoConfig && (
         <div className="flex gap-4 items-end">
           <div>
             <label className="block text-xs font-medium text-muted uppercase tracking-wider mb-1.5">
               Duration
             </label>
             <div className="flex gap-1.5">
-              {(MODEL_DURATIONS[model] ?? VIDEO_DURATIONS).map((d) => (
+              {videoConfig.durations.map((d) => (
                 <button
                   key={d}
                   type="button"
@@ -144,7 +136,7 @@ export function OutputCardBody({
             </div>
           </div>
 
-          {showAudioToggle && (
+          {videoConfig.supportsAudio && (
             <label className="flex items-center gap-2 cursor-pointer pb-0.5">
               <input
                 type="checkbox"
