@@ -570,16 +570,27 @@ export default function Home() {
                   loadingVideo={loadingVideo}
                   videoStatus={isVideoGenerating || videoState.status === "failed" ? videoState.status : undefined}
                   videoError={videoState.error}
-                  onAddAsInputImage={(url) =>
-                    setReferenceImages((prev) => [
-                      ...prev,
-                      {
-                        id: crypto.randomUUID(),
-                        url,
-                        name: `generation-${Date.now()}.png`,
-                      },
-                    ])
-                  }
+                  onAddAsInputImage={(url) => {
+                    const newRef = {
+                      id: crypto.randomUUID(),
+                      url,
+                      name: `generation-${Date.now()}.png`,
+                    };
+                    if (savedCurrent) {
+                      // Return to current working state and add the image there
+                      setPrompt(savedCurrent.prompt);
+                      handleBrandData(savedCurrent.brandData);
+                      setModel(savedCurrent.model);
+                      setReferenceImages([...savedCurrent.referenceImages, newRef]);
+                      setAspectRatio(savedCurrent.aspectRatio);
+                      setResolution(savedCurrent.resolution);
+                      setMediaResult(savedCurrent.mediaResult);
+                      setSavedCurrent(null);
+                      setActiveHistoryId(null);
+                    } else {
+                      setReferenceImages((prev) => [...prev, newRef]);
+                    }
+                  }}
                 />
               </section>
             )}
