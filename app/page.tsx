@@ -28,11 +28,12 @@ import {
 const HISTORY_KEY = "generation_history";
 const MAX_HISTORY = 50;
 
-/** Strip base64 data URLs from reference images before persisting to localStorage */
+/** Replace data URLs with empty strings before persisting to localStorage (data lives in IndexedDB) */
 function stripDataUrls(images: ReferenceImage[]): ReferenceImage[] {
-  return images
-    .filter((img) => !img.url.startsWith("data:"))
-    .map((img) => ({ ...img }));
+  return images.map((img) => ({
+    ...img,
+    url: img.url.startsWith("data:") ? "" : img.url,
+  }));
 }
 
 export default function Home() {
@@ -51,6 +52,7 @@ export default function Home() {
   const [generating, setGenerating] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [loadingVideo, setLoadingVideo] = useState(false);
   const [showWhatIsThis, setShowWhatIsThis] = useState(false);
   const [duration, setDuration] = useState(5);
   const [generateAudio, setGenerateAudio] = useState(false);
@@ -117,15 +119,27 @@ export default function Home() {
       try {
         const parsed: HistoryEntry[] = JSON.parse(storedHistory);
         setHistory(parsed);
-        // Hydrate imageUrl from IndexedDB in background
+        // Hydrate imageUrl and reference image data URLs from IndexedDB
         Promise.all(
           parsed.map(async (entry) => {
-            if (entry.mediaType === "video") return entry; // Videos aren't persisted
+            // Hydrate reference images that were stripped to empty URLs
+            const hydratedRefs = await Promise.all(
+              entry.referenceImages.map(async (ref) => {
+                if (ref.url) return ref; // Already has a URL (e.g. remote)
+                const url = await loadImage(`ref-${ref.id}`);
+                return url ? { ...ref, url } : ref;
+              }),
+            );
+            const refsWithUrls = hydratedRefs.filter((ref) => ref.url);
+
+            if (entry.mediaType === "video") {
+              return { ...entry, referenceImages: refsWithUrls };
+            }
             const url = await loadImage(entry.id);
-            return { ...entry, imageUrl: url ?? undefined };
+            return { ...entry, imageUrl: url ?? undefined, referenceImages: refsWithUrls };
           }),
         ).then((hydrated) => {
-          setHistory(hydrated.filter((e) => e.imageUrl || e.mediaType === "video"));
+          setHistory(hydrated.filter((e) => e.imageUrl || (e.mediaType === "video" && e.videoJobId)));
         });
       } catch {}
     }
@@ -169,7 +183,7 @@ export default function Home() {
       if (willBeVideo) {
         const config = getVideoConfig(newModel);
         setAspectRatio(config.aspectRatios[0]);
-        setResolution(config.resolutions.includes("1080p") ? "1080p" : config.resolutions[0]);
+        setResolution(config.resolutions.includes("720p") ? "720p" : config.resolutions[0]);
         setDuration(config.durations[0]);
       } else {
         setAspectRatio("1:1");
@@ -180,7 +194,7 @@ export default function Home() {
       // Switching between video models — reset to valid values for new model
       const config = getVideoConfig(newModel);
       if (!config.durations.includes(duration)) setDuration(config.durations[0]);
-      if (!config.resolutions.includes(resolution)) setResolution(config.resolutions.includes("1080p") ? "1080p" : config.resolutions[0]);
+      if (!config.resolutions.includes(resolution)) setResolution(config.resolutions.includes("720p") ? "720p" : config.resolutions[0]);
       if (!config.aspectRatios.includes(aspectRatio)) setAspectRatio(config.aspectRatios[0]);
     }
 
@@ -243,7 +257,15 @@ export default function Home() {
       mediaType: "video",
       duration,
       generateAudio,
+      videoJobId: videoState.jobId ?? undefined,
     };
+
+    // Save data-URL reference images to IndexedDB
+    for (const ref of referenceImages) {
+      if (ref.url.startsWith("data:")) {
+        saveImage(`ref-${ref.id}`, ref.url).catch(console.error);
+      }
+    }
 
     const newHistory = [entry, ...history].slice(0, MAX_HISTORY);
     persistHistory(newHistory);
@@ -275,10 +297,21 @@ export default function Home() {
         // Save image to IndexedDB
         saveImage(id, result.imageUrl).catch(console.error);
 
-        // Clean up evicted entries from IndexedDB
+        // Save data-URL reference images to IndexedDB
+        for (const ref of referenceImages) {
+          if (ref.url.startsWith("data:")) {
+            saveImage(`ref-${ref.id}`, ref.url).catch(console.error);
+          }
+        }
+
+        // Clean up evicted entries from IndexedDB (output images + reference images)
         const evicted = history.slice(MAX_HISTORY - 1);
         if (evicted.length > 0) {
-          deleteImages(evicted.map((e) => e.id)).catch(console.error);
+          const evictedIds = evicted.flatMap((e) => [
+            e.id,
+            ...e.referenceImages.map((ref) => `ref-${ref.id}`),
+          ]);
+          deleteImages(evictedIds).catch(console.error);
         }
 
         persistHistory(newHistory);
@@ -300,8 +333,8 @@ export default function Home() {
     submitVideo(params);
   }
 
-  function handleSelectHistory(entry: HistoryEntry) {
-    if (!entry.imageUrl && entry.mediaType !== "video") return;
+  async function handleSelectHistory(entry: HistoryEntry) {
+    if (!entry.imageUrl && !(entry.mediaType === "video" && entry.videoJobId)) return;
 
     // Save current working state on first history browse
     if (!savedCurrent) {
@@ -322,14 +355,31 @@ export default function Home() {
     setReferenceImages(entry.referenceImages);
     setAspectRatio(entry.aspectRatio);
     setResolution(entry.resolution);
+    setActiveHistoryId(entry.id);
 
-    if (entry.mediaType === "video") {
-      // Video results aren't persisted — show metadata only
+    if (entry.mediaType === "video" && entry.videoJobId && apiKey) {
+      // Try to load the video from the stored job ID
       setMediaResult(null);
+      setLoadingVideo(true);
+      try {
+        const res = await fetch(
+          `/api/video/${entry.videoJobId}/content?index=0`,
+          { headers: { Authorization: `Bearer ${apiKey}` } },
+        );
+        if (!res.ok) throw new Error("expired");
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        setMediaResult({ type: "video", videoUrl: url, model: entry.model });
+      } catch {
+        setMediaResult({ type: "video", videoUrl: "", model: entry.model });
+      } finally {
+        setLoadingVideo(false);
+      }
+    } else if (entry.mediaType === "video") {
+      setMediaResult({ type: "video", videoUrl: "", model: entry.model });
     } else if (entry.imageUrl) {
       setMediaResult({ type: "image", imageUrl: entry.imageUrl, model: entry.model });
     }
-    setActiveHistoryId(entry.id);
   }
 
   function handleReturnToCurrent() {
@@ -351,7 +401,7 @@ export default function Home() {
     videoState.status === "pending" ||
     videoState.status === "in_progress";
 
-  const showResult = mediaResult || generating || isVideoGenerating || videoState.status === "failed";
+  const showResult = mediaResult || generating || isVideoGenerating || loadingVideo || videoState.status === "failed";
 
   return (
     <div className="min-h-screen bg-background">
@@ -486,6 +536,7 @@ export default function Home() {
                 <ImageResult
                   result={mediaResult}
                   loading={generating}
+                  loadingVideo={loadingVideo}
                   videoStatus={isVideoGenerating || videoState.status === "failed" ? videoState.status : undefined}
                   videoError={videoState.error}
                   onAddAsInputImage={(url) =>

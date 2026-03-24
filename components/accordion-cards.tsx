@@ -106,50 +106,50 @@ export default function AccordionCards({
 
       {/* Expanded body for non-model cards */}
       {expandedCard && expandedCard !== "model" && (
-        <div className="pt-4 px-4 pb-2 bg-surface/50 border border-border rounded-lg">
-          {expandedCard === "mood" && (
-            <MoodCardBody>
-              <Moodboard
-                apiKey={apiKey}
-                brandData={brandData}
-                onBrandData={onBrandData}
-                moodModel={moodModel}
-                onMoodModelChange={onMoodModelChange}
+        <div className="bg-surface/50 border border-border rounded-lg overflow-hidden">
+          <div className="pt-4 px-4 pb-2">
+            {expandedCard === "mood" && (
+              <MoodCardBody>
+                <Moodboard
+                  apiKey={apiKey}
+                  brandData={brandData}
+                  onBrandData={onBrandData}
+                  moodModel={moodModel}
+                  onMoodModelChange={onMoodModelChange}
+                />
+              </MoodCardBody>
+            )}
+            {expandedCard === "inputImages" && (
+              <ReferencesCardBody
+                images={referenceImages}
+                onImagesChange={onReferenceImagesChange}
               />
-            </MoodCardBody>
-          )}
-          {expandedCard === "inputImages" && (
-            <ReferencesCardBody
-              images={referenceImages}
-              onImagesChange={onReferenceImagesChange}
-            />
-          )}
-          {expandedCard === "output" && (
-            <OutputCardBody
-              aspectRatio={aspectRatio}
-              onAspectRatioChange={onAspectRatioChange}
-              resolution={resolution}
-              onResolutionChange={onResolutionChange}
-              model={model}
-              isVideoModel={isVideoModel}
-              duration={duration}
-              onDurationChange={onDurationChange}
-              generateAudio={generateAudio}
-              onGenerateAudioChange={onGenerateAudioChange}
-            />
-          )}
-          <div className="flex justify-center mt-3">
-            <button
-              type="button"
-              onClick={() => setExpandedCard(null)}
-              className="p-1.5 rounded-md text-muted hover:text-foreground hover:bg-surface transition-colors"
-              aria-label="Collapse card"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 10L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            )}
+            {expandedCard === "output" && (
+              <OutputCardBody
+                aspectRatio={aspectRatio}
+                onAspectRatioChange={onAspectRatioChange}
+                resolution={resolution}
+                onResolutionChange={onResolutionChange}
+                model={model}
+                isVideoModel={isVideoModel}
+                duration={duration}
+                onDurationChange={onDurationChange}
+                generateAudio={generateAudio}
+                onGenerateAudioChange={onGenerateAudioChange}
+              />
+            )}
           </div>
+          <button
+            type="button"
+            onClick={() => setExpandedCard(null)}
+            className="w-full mt-2 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-muted hover:text-foreground transition-colors flex items-center justify-center"
+            aria-label="Collapse card"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 10L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       )}
     </div>

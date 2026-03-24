@@ -85,4 +85,5 @@ export interface HistoryEntry {
   mediaType?: "image" | "video";
   duration?: number;
   generateAudio?: boolean;
+  videoJobId?: string;
 }

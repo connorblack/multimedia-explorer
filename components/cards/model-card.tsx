@@ -20,6 +20,8 @@ export function ModelCardHeader({
   );
 }
 
+type MediaFilter = "image" | "video";
+
 export function ModelCardBody({
   model,
   onModelChange,
@@ -33,37 +35,75 @@ export function ModelCardBody({
   videoModels: ModelOption[];
   loading: boolean;
 }) {
+  const isVideoSelected = videoModels.some((m) => m.id === model);
+  const activeFilter: MediaFilter = isVideoSelected ? "video" : "image";
+
+  function handleFilterChange(filter: MediaFilter) {
+    if (filter === activeFilter) return;
+    const models = filter === "video" ? videoModels : imageModels;
+    if (models.length > 0) {
+      onModelChange(models[0].id);
+    }
+  }
+
+  const visibleModels = activeFilter === "video" ? videoModels : imageModels;
+
   return (
     <div>
-      <div>
-        <label className="block text-xs font-medium text-muted uppercase tracking-wider mb-1.5">
-          Select Image or Video Model
-        </label>
+      <label className="block text-xs font-medium text-muted uppercase tracking-wider mb-1.5">
+        Choose a model
+      </label>
+      <div className="flex items-center gap-2">
+        <div className="flex rounded-lg border border-border overflow-hidden shrink-0">
+          <button
+            type="button"
+            onClick={() => handleFilterChange("image")}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors cursor-pointer ${
+              activeFilter === "image"
+                ? "bg-accent text-white"
+                : "bg-surface text-muted hover:text-foreground"
+            }`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            Image
+          </button>
+          <button
+            type="button"
+            onClick={() => handleFilterChange("video")}
+            disabled={videoModels.length === 0}
+            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors cursor-pointer border-l border-border disabled:opacity-40 disabled:cursor-not-allowed ${
+              activeFilter === "video"
+                ? "bg-accent text-white"
+                : "bg-surface text-muted hover:text-foreground"
+            }`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <polygon points="23 7 16 12 23 17 23 7" />
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            </svg>
+            Video
+          </button>
+        </div>
         <select
           value={model}
           onChange={(e) => onModelChange(e.target.value)}
           disabled={loading}
-          className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer disabled:opacity-50"
+          className="flex-1 min-w-0 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer disabled:opacity-50"
         >
           {loading && <option>Loading models…</option>}
-          <optgroup label="Video Models">
-            {videoModels.length === 0 ? (
-              <option disabled>No video models available</option>
-            ) : (
-              videoModels.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.label}
-                </option>
-              ))
-            )}
-          </optgroup>
-          <optgroup label="Image Models">
-            {imageModels.map((m) => (
+          {visibleModels.length === 0 ? (
+            <option disabled>No models available</option>
+          ) : (
+            visibleModels.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.label}
               </option>
-            ))}
-          </optgroup>
+            ))
+          )}
         </select>
       </div>
     </div>

@@ -22,7 +22,7 @@ export function OutputCardHeader({
 }) {
   return (
     <div>
-      <div className="text-sm font-medium">Output</div>
+      <div className="text-sm font-medium">Output Settings</div>
       <div className="text-xs text-muted mt-1">
         {aspectRatio} / {resolution}
         {isVideoModel && duration ? ` / ${duration}s` : ""}

@@ -129,12 +129,40 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ imageUrl, model: result.model });
-  } catch (err) {
-    return NextResponse.json(
-      {
-        error: err instanceof Error ? err.message : "Failed to generate image",
-      },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    let message = "Failed to generate image";
+    let statusCode = 500;
+
+    if (err instanceof Error) {
+      message = err.message;
+
+      // OpenRouter SDK errors carry structured detail in .body or .error
+      const sdkErr = err as unknown as Record<string, unknown>;
+
+      // Typed SDK errors (BadGatewayResponseError, etc.) have .error.message
+      if (sdkErr.error && typeof sdkErr.error === "object") {
+        const nested = sdkErr.error as Record<string, unknown>;
+        if (typeof nested.message === "string" && nested.message) {
+          message = nested.message;
+        }
+      }
+
+      // Fallback: parse the raw body string for more detail
+      if (message === err.message && typeof sdkErr.body === "string") {
+        try {
+          const body = JSON.parse(sdkErr.body);
+          const detail = body?.error?.message || body?.error?.metadata?.raw;
+          if (typeof detail === "string" && detail) {
+            message = detail;
+          }
+        } catch {}
+      }
+
+      if (typeof sdkErr.statusCode === "number") {
+        statusCode = sdkErr.statusCode;
+      }
+    }
+
+    return NextResponse.json({ error: message }, { status: statusCode });
   }
 }

@@ -22,12 +22,14 @@ function ElapsedTime() {
 export default function ImageResult({
   result,
   loading,
+  loadingVideo,
   onAddAsInputImage,
   videoStatus,
   videoError,
 }: {
   result: MediaResult | null;
   loading: boolean;
+  loadingVideo?: boolean;
   onAddAsInputImage?: (url: string) => void;
   videoStatus?: VideoStatus;
   videoError?: string | null;
@@ -69,6 +71,15 @@ export default function ImageResult({
     );
   }
 
+  if (loadingVideo) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 space-y-4">
+        <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-muted">Loading video from history…</p>
+      </div>
+    );
+  }
+
   if (videoStatus === "failed" && videoError) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
@@ -80,6 +91,7 @@ export default function ImageResult({
   if (!result) return null;
 
   const isVideo = result.type === "video";
+  const isExpiredVideo = isVideo && !result.videoUrl;
 
   function handleDownload() {
     if (!result) return;
@@ -118,17 +130,33 @@ export default function ImageResult({
               {added ? "Added as Input" : "Add as Input Image"}
             </button>
           )}
-          <button
-            onClick={handleDownload}
-            className="px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer"
-          >
-            Download
-          </button>
+          {!isExpiredVideo && (
+            <button
+              onClick={handleDownload}
+              className="px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:border-accent hover:text-accent transition-colors cursor-pointer"
+            >
+              Download
+            </button>
+          )}
         </div>
       </div>
 
       <div className="rounded-lg overflow-hidden border border-border bg-surface">
-        {isVideo ? (
+        {isExpiredVideo ? (
+          <div className="flex flex-col items-center justify-center py-16 space-y-3 text-muted">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+              <line x1="7" y1="2" x2="7" y2="22" />
+              <line x1="17" y1="2" x2="17" y2="22" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <line x1="2" y1="7" x2="7" y2="7" />
+              <line x1="2" y1="17" x2="7" y2="17" />
+              <line x1="17" y1="7" x2="22" y2="7" />
+              <line x1="17" y1="17" x2="22" y2="17" />
+            </svg>
+            <p className="text-sm">This video has expired and is no longer available for playback.</p>
+          </div>
+        ) : isVideo ? (
           <video
             src={mediaUrl}
             controls
