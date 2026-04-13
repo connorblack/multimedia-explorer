@@ -28,10 +28,16 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% 20%, rgba(59, 130, 246, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 15% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 70%, rgba(56, 189, 248, 0.10) 0%, transparent 55%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), ui-monospace, monospace;
 }
+
 
 /* CRT Scanline overlay — z-40 sits above normal content;
    color swatches at z-41 punch through; modals at z-50 sit above all */

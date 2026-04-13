@@ -447,9 +447,9 @@ export default function Home() {
   const showResult = mediaResult || generating || isVideoGenerating || loadingVideo || videoState.status === "failed";
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen relative">
       {/* Header */}
-      <header className="border-b border-border/80">
+      <header className="border-b-2 border-border/80">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center glow-accent-sm">
@@ -555,7 +555,7 @@ export default function Home() {
             />
 
             {/* Generate section */}
-            <section className="p-6 bg-surface/80 backdrop-blur-sm border border-border rounded-xl hover:border-border transition-all">
+            <section className="p-6 bg-surface/80 backdrop-blur-sm border-2 border-border rounded-xl hover:border-border transition-all">
               <GenerateForm
                 apiKey={apiKey}
                 brandData={brandData}
@@ -577,7 +577,7 @@ export default function Home() {
 
             {/* Result section */}
             {showResult && (
-              <section className="p-6 bg-surface/80 backdrop-blur-sm border border-border rounded-xl">
+              <section className="p-6 bg-surface/80 backdrop-blur-sm border-2 border-border rounded-xl">
                 <ImageResult
                   result={mediaResult}
                   loading={generating}
@@ -613,7 +613,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border/60 mt-auto">
+      <footer className="border-t border-border/40 mt-auto">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between text-xs text-muted tracking-wide">
           <a
             href="https://openrouter.ai/docs/sdks"

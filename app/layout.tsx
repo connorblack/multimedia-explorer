@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${jetbrainsMono.variable} ${spaceGrotesk.variable} antialiased bg-background text-foreground`}
+        className={`${jetbrainsMono.variable} ${spaceGrotesk.variable} antialiased text-foreground`}
         suppressHydrationWarning
       >
         <div className="scanlines-overlay" />

@@ -100,7 +100,7 @@ export default function AccordionCards({
             className={`px-4 py-3 rounded-xl border text-left transition-all cursor-pointer ${
               expandedCard === card.id
                 ? "bg-surface/90 border-accent/50 shadow-[0_0_12px_rgba(59,130,246,0.2)]"
-                : "bg-surface/60 border-border hover:border-accent/30 hover:shadow-[0_0_8px_rgba(59,130,246,0.08)]"
+                : "bg-surface/60 border-border/60 hover:border-accent/30 hover:shadow-[0_0_8px_rgba(59,130,246,0.08)]"
             }`}
           >
             {card.header}
@@ -110,7 +110,7 @@ export default function AccordionCards({
 
       {/* Expanded body for non-model cards */}
       {expandedCard && expandedCard !== "model" && (
-        <div className="bg-surface border border-accent/30 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+        <div className="bg-surface border border-accent/20 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]">
           <div className="pt-5 px-5 pb-3">
             {expandedCard === "mood" && (
               <MoodCardBody>
