@@ -7,7 +7,7 @@ export function ReferencesCardHeader({ images }: { images: ReferenceImage[] }) {
   return (
     <div>
       <div className="text-sm font-medium tracking-wide">Input Images</div>
-      <div className="text-xs text-muted/60 mt-1 tracking-wide">
+      <div className="text-xs text-muted mt-1 tracking-wide">
         {images.length > 0 ? `${images.length} image${images.length === 1 ? "" : "s"}` : "None"}
       </div>
     </div>
@@ -134,7 +134,7 @@ export function ReferencesCardBody({
         }`}
       >
         <svg
-          className={`w-6 h-6 ${isDragging ? "text-accent" : "text-muted/60"}`}
+          className={`w-6 h-6 ${isDragging ? "text-accent" : "text-muted"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -146,10 +146,10 @@ export function ReferencesCardBody({
             d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
           />
         </svg>
-        <span className="text-xs font-medium text-foreground/80 tracking-wide">
+        <span className="text-xs font-medium text-foreground/90 tracking-wide">
           {isDragging ? "Drop images here" : "Click to upload or drag & drop"}
         </span>
-        <span className="text-[10px] text-muted/40 tracking-wide">PNG, JPG, WebP, GIF</span>
+        <span className="text-[10px] text-muted/60 tracking-wide">PNG, JPG, WebP, GIF</span>
       </button>
       <input
         ref={fileInputRef}
@@ -162,9 +162,9 @@ export function ReferencesCardBody({
 
       {/* Divider */}
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-border/40" />
-        <span className="text-[10px] uppercase tracking-[0.15em] text-muted/40 font-medium">or</span>
-        <div className="flex-1 h-px bg-border/40" />
+        <div className="flex-1 h-px bg-border/60" />
+        <span className="text-[10px] uppercase tracking-[0.15em] text-muted/60 font-medium">or</span>
+        <div className="flex-1 h-px bg-border/60" />
       </div>
 
       {/* URL input */}
@@ -175,13 +175,13 @@ export function ReferencesCardBody({
           onChange={(e) => setUrlInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddUrl())}
           placeholder="Paste image URL..."
-          className="flex-1 px-4 py-2 bg-surface border border-border rounded-lg text-xs text-foreground placeholder:text-muted/40 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
+          className="flex-1 px-4 py-2 bg-surface border border-border rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
         />
         <button
           type="button"
           onClick={handleAddUrl}
           disabled={!urlInput.trim()}
-          className="px-4 py-2 text-xs font-medium tracking-wide bg-accent hover:bg-accent-hover text-white rounded-lg transition-all hover:shadow-[0_0_10px_rgba(59,130,246,0.3)] disabled:opacity-40 cursor-pointer"
+          className="px-4 py-2 text-xs font-medium tracking-wide bg-accent hover:bg-accent-hover text-white rounded-lg transition-all hover:shadow-[0_0_10px_rgba(59,130,246,0.3)] disabled:opacity-50 cursor-pointer"
         >
           Add
         </button>

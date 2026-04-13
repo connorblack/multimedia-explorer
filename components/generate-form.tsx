@@ -204,7 +204,7 @@ export default function GenerateForm({
               : "Describe the image you want to generate..."
           }
           rows={3}
-          className="w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_12px_rgba(59,130,246,0.15)] transition-all resize-none"
+          className="w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm text-foreground placeholder:text-muted/70 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_12px_rgba(59,130,246,0.15)] transition-all resize-none"
         />
 
         {/* Bottom bar: Improve prompt (left) + Generate (right) */}
@@ -226,7 +226,7 @@ export default function GenerateForm({
               type="button"
               onClick={handleImprovePrompt}
               disabled={improving || !prompt.trim()}
-              className="px-3 py-2 text-xs tracking-wide bg-surface border border-border rounded-lg hover:border-accent/40 hover:shadow-[0_0_8px_rgba(59,130,246,0.1)] transition-all disabled:opacity-40 cursor-pointer"
+              className="px-3 py-2 text-xs tracking-wide bg-surface border border-border rounded-lg hover:border-accent/40 hover:shadow-[0_0_8px_rgba(59,130,246,0.1)] transition-all disabled:opacity-50 cursor-pointer"
             >
               {improving ? (
                 <span className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function GenerateForm({
           <button
             type="submit"
             disabled={loading || !prompt.trim()}
-            className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium tracking-wide rounded-lg transition-all hover:shadow-[0_0_15px_rgba(59,130,246,0.4)] disabled:opacity-40 cursor-pointer"
+            className="flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium tracking-wide rounded-lg transition-all hover:shadow-[0_0_15px_rgba(59,130,246,0.4)] disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>

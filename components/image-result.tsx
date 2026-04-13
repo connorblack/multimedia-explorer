@@ -60,7 +60,7 @@ export default function ImageResult({
             <p className="text-sm text-muted tracking-wide">
               Video is being generated... <ElapsedTime />
             </p>
-            <p className="text-xs text-muted/50 tracking-wide">
+            <p className="text-xs text-muted/70 tracking-wide">
               {statusSubtext[videoStatus!] ?? ""}
             </p>
           </div>
@@ -131,7 +131,7 @@ export default function ImageResult({
       <div className="flex items-center justify-between">
         <h2 className="text-base font-heading font-bold tracking-tight text-glow-sm">// RESULT</h2>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted/60 tracking-wide">{result.model}</span>
+          <span className="text-xs text-muted tracking-wide">{result.model}</span>
           {!isVideo && onAddAsInputImage && (
             <button
               onClick={() => {

@@ -110,7 +110,7 @@ export default function AccordionCards({
 
       {/* Expanded body for non-model cards */}
       {expandedCard && expandedCard !== "model" && (
-        <div className="bg-surface/80 backdrop-blur-sm border border-accent/30 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+        <div className="bg-surface border border-accent/30 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.15)]">
           <div className="pt-5 px-5 pb-3">
             {expandedCard === "mood" && (
               <MoodCardBody>
@@ -149,7 +149,7 @@ export default function AccordionCards({
           <button
             type="button"
             onClick={() => setExpandedCard(null)}
-            className="w-full mt-2 py-2 bg-surface-hover/60 hover:bg-accent/10 text-muted hover:text-accent transition-all flex items-center justify-center cursor-pointer"
+            className="w-full mt-2 py-2 bg-surface-hover/80 hover:bg-accent/10 text-muted hover:text-accent transition-all flex items-center justify-center cursor-pointer"
             aria-label="Collapse card"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

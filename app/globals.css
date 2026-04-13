@@ -9,7 +9,7 @@
   --surface: #0c0c14;
   --surface-hover: #12121f;
   --border: #1e293b;
-  --muted: #64748b;
+  --muted: #8494a7;
   --cyan: #38bdf8;
 }
 
@@ -33,9 +33,9 @@ body {
   font-family: var(--font-sans), ui-monospace, monospace;
 }
 
-/* CRT Scanline overlay */
-.scanlines::after {
-  content: "";
+/* CRT Scanline overlay — z-40 sits above normal content;
+   color swatches at z-41 punch through; modals at z-50 sit above all */
+.scanlines-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -46,7 +46,13 @@ body {
     rgba(0, 0, 0, 0.06) 2px,
     rgba(0, 0, 0, 0.06) 4px
   );
-  z-index: 9999;
+  z-index: 40;
+}
+
+/* Lift color swatches above scanlines */
+.color-swatch {
+  position: relative;
+  z-index: 41;
 }
 
 /* CRT vignette overlay */
@@ -59,7 +65,7 @@ body {
     transparent 50%,
     rgba(0, 0, 0, 0.4) 100%
   );
-  z-index: 9998;
+  z-index: 39;
 }
 
 /* Glow utilities */
@@ -143,7 +149,7 @@ body {
 
 /* Select styling */
 select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238494a7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2rem;

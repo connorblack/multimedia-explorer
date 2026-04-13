@@ -449,7 +449,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative">
       {/* Header */}
-      <header className="border-b border-border/60">
+      <header className="border-b border-border/80">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center glow-accent-sm">
@@ -486,7 +486,7 @@ export default function Home() {
                   OpenRouter
                 </a>
                 {" "}<span className="text-border">|</span>{" "}
-                <span className="text-muted/60">multi-model media generation</span>
+                <span className="text-muted">multi-model media generation</span>
               </p>
             </div>
           </div>
@@ -613,7 +613,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 mt-auto">
+      <footer className="border-t border-border/60 mt-auto">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between text-xs text-muted tracking-wide">
           <a
             href="https://openrouter.ai/docs/sdks"

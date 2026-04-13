@@ -20,7 +20,7 @@ export default function AuthPrompt({
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
-      <p className="text-sm text-foreground/80 pr-6 tracking-wide">
+      <p className="text-sm text-foreground/90 pr-6 tracking-wide">
         You need an OpenRouter API key to continue.
       </p>
       <SignInButton variant="default" size="sm" />

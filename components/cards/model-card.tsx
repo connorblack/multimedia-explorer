@@ -15,7 +15,7 @@ export function ModelCardHeader({
   return (
     <div>
       <div className="text-sm font-medium tracking-wide">Select Image or Video Model</div>
-      <div className="text-xs text-muted/60 truncate mt-1">{selected?.label ?? model}</div>
+      <div className="text-xs text-muted truncate mt-1">{selected?.label ?? model}</div>
     </div>
   );
 }
@@ -75,7 +75,7 @@ export function ModelCardBody({
             type="button"
             onClick={() => handleFilterChange("video")}
             disabled={videoModels.length === 0}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium tracking-wide transition-all cursor-pointer border-l border-border disabled:opacity-30 disabled:cursor-not-allowed ${
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium tracking-wide transition-all cursor-pointer border-l border-border disabled:opacity-40 disabled:cursor-not-allowed ${
               activeFilter === "video"
                 ? "bg-accent text-white shadow-[0_0_12px_rgba(59,130,246,0.3)]"
                 : "bg-surface text-muted hover:text-foreground"
@@ -92,7 +92,7 @@ export function ModelCardBody({
           value={model}
           onChange={(e) => onModelChange(e.target.value)}
           disabled={loading}
-          className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all cursor-pointer disabled:opacity-40"
+          className="flex-1 min-w-0 px-3 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all cursor-pointer disabled:opacity-50"
         >
           {loading && <option>Loading models...</option>}
           {visibleModels.length === 0 ? (

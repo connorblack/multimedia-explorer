@@ -20,7 +20,7 @@ export default function HistoryTimeline({
 
   return (
     <div className="flex flex-col items-center pt-1">
-      <span className="text-[9px] uppercase tracking-[0.2em] text-muted/50 mb-3">History</span>
+      <span className="text-[9px] uppercase tracking-[0.2em] text-muted mb-3">History</span>
 
       {/* Current / return-to-top dot */}
       <button
@@ -37,7 +37,7 @@ export default function HistoryTimeline({
       {entries.length > 0 && (
         <>
           {/* Divider */}
-          <div className="w-px h-3 bg-border/40 mt-2" />
+          <div className="w-px h-3 bg-muted/40 mt-2" />
 
           {/* History dots (newest first) */}
           <div className="flex flex-col items-center mt-2">
@@ -55,7 +55,7 @@ export default function HistoryTimeline({
                       ? "bg-accent scale-125 ring-2 ring-accent/30 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
                       : hoveredId === entry.id
                         ? "bg-muted scale-125 shadow-[0_0_6px_rgba(100,116,139,0.3)]"
-                        : "bg-border/60"
+                        : "bg-muted/50"
                   }`}
                 />
 
@@ -71,7 +71,7 @@ export default function HistoryTimeline({
                 )}
                 {hoveredId === entry.id && !entry.imageUrl && entry.mediaType === "video" && (
                   <div className="absolute top-1/2 right-full mr-3 -translate-y-1/2 z-50 w-[7rem] p-1.5 bg-surface border border-accent/30 rounded-xl shadow-lg backdrop-blur-sm flex items-center justify-center glow-accent-sm">
-                    <div className="w-24 h-24 flex flex-col items-center justify-center text-muted/50">
+                    <div className="w-24 h-24 flex flex-col items-center justify-center text-muted">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
                         <line x1="7" y1="2" x2="7" y2="22" />

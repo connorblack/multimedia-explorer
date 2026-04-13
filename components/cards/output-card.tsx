@@ -23,7 +23,7 @@ export function OutputCardHeader({
   return (
     <div>
       <div className="text-sm font-medium tracking-wide">Output Settings</div>
-      <div className="text-xs text-muted/60 mt-1 tracking-wide">
+      <div className="text-xs text-muted mt-1 tracking-wide">
         {aspectRatio} / {resolution}
         {isVideoModel && duration ? ` / ${duration}s` : ""}
       </div>
@@ -149,7 +149,7 @@ export function OutputCardBody({
                 disabled={videoConfig.requiresAudio}
                 className={`w-4 h-4 rounded border-border bg-surface accent-accent ${videoConfig.requiresAudio ? "cursor-default opacity-50" : "cursor-pointer"}`}
               />
-              <span className={`text-xs tracking-wide ${videoConfig.requiresAudio ? "text-muted/50" : "text-muted"}`}>Generate Audio</span>
+              <span className={`text-xs tracking-wide ${videoConfig.requiresAudio ? "text-muted/70" : "text-muted"}`}>Generate Audio</span>
             </label>
           )}
         </div>

@@ -145,7 +145,7 @@ export default function Moodboard({
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="Enter a URL (e.g. openrouter.ai)"
-                  className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted/40 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
+                  className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
                 />
               </div>
             ) : (
@@ -156,7 +156,7 @@ export default function Moodboard({
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Describe a mood (e.g. warm sunset, retro 80s neon)"
-                  className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted/40 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
+                  className="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all"
                 />
               </div>
             )}
@@ -176,7 +176,7 @@ export default function Moodboard({
               <button
                 type="submit"
                 disabled={isDisabled}
-                className="px-5 py-2.5 text-sm font-medium tracking-wide bg-accent hover:bg-accent-hover text-white rounded-lg transition-all hover:shadow-[0_0_12px_rgba(59,130,246,0.3)] disabled:opacity-40 cursor-pointer whitespace-nowrap"
+                className="px-5 py-2.5 text-sm font-medium tracking-wide bg-accent hover:bg-accent-hover text-white rounded-lg transition-all hover:shadow-[0_0_12px_rgba(59,130,246,0.3)] disabled:opacity-50 cursor-pointer whitespace-nowrap"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -238,10 +238,10 @@ export default function Moodboard({
               {brandData.colors.map((color, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <div
-                    className="w-7 h-7 rounded-lg border border-border/60"
+                    className="color-swatch w-8 h-8 rounded-lg ring-1 ring-white/10"
                     style={{ backgroundColor: color }}
                   />
-                  <span className="text-xs text-muted/60">{color}</span>
+                  <span className="text-xs text-muted/80">{color}</span>
                 </div>
               ))}
             </div>
@@ -273,7 +273,7 @@ export default function Moodboard({
               {brandData.visualStyle.map((style, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 text-xs bg-surface-hover text-foreground/80 border border-border rounded-lg tracking-wide"
+                  className="px-3 py-1 text-xs bg-surface-hover text-foreground/90 border border-border rounded-lg tracking-wide"
                 >
                   {style}
                 </span>
@@ -286,11 +286,11 @@ export default function Moodboard({
             <h3 className="text-[10px] font-medium text-muted uppercase tracking-[0.15em] mb-2.5">
               Tone
             </h3>
-            <p className="text-sm text-foreground/70 leading-relaxed">{brandData.tone}</p>
+            <p className="text-sm text-foreground/80 leading-relaxed">{brandData.tone}</p>
           </div>
 
           {/* System prompt */}
-          <div className="p-4 border border-border/60 rounded-xl">
+          <div className="p-4 border border-border/80 rounded-xl">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[10px] font-medium text-muted uppercase tracking-[0.15em]">
                 Generated System Prompt
@@ -333,7 +333,7 @@ export default function Moodboard({
                 className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-accent/60 focus:shadow-[0_0_10px_rgba(59,130,246,0.15)] transition-all resize-y"
               />
             ) : (
-              <p className="text-sm text-foreground/60 whitespace-pre-wrap leading-relaxed">
+              <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
                 {brandData.customSystemPrompt ?? buildSystemPrompt(brandData)}
               </p>
             )}
