@@ -114,10 +114,10 @@ export default function ImageResult({
     const link = document.createElement("a");
     if (result.type === "image") {
       link.href = result.imageUrl;
-      link.download = `media-playground-${Date.now()}.png`;
+      link.download = `multimedia-explorer-${Date.now()}.png`;
     } else {
       link.href = result.videoUrl;
-      link.download = `media-playground-${Date.now()}.mp4`;
+      link.download = `multimedia-explorer-${Date.now()}.mp4`;
     }
     document.body.appendChild(link);
     link.click();

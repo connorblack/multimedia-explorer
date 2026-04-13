@@ -14,7 +14,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Media Playground",
+  title: "Multimedia Explorer",
   description: "Generate media with OpenRouter - a DevRel example project",
 };
 

@@ -1,4 +1,4 @@
-const DB_NAME = "media-playground";
+const DB_NAME = "multimedia-explorer";
 const STORE_NAME = "history-images";
 const DB_VERSION = 1;
 

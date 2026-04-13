@@ -1,4 +1,4 @@
-# Media Playground
+# Multimedia Explorer
 
 An open-source example app from [OpenRouter](https://openrouter.ai) that demonstrates how to combine different AI models for creative media experimentation. Generate images using 17+ models — from Google Gemini to OpenAI GPT-5 to FLUX — all through a single API.
 

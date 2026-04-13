@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         Authorization: authHeader,
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "Media Playground",
+        "X-Title": "Multimedia Explorer",
       },
       body: JSON.stringify(payload),
     });

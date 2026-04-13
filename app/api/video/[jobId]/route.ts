@@ -18,7 +18,7 @@ export async function GET(
       headers: {
         Authorization: authHeader,
         "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "Media Playground",
+        "X-Title": "Multimedia Explorer",
       },
     });
 

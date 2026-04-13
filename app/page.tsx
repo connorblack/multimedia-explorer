@@ -461,7 +461,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-lg font-heading font-bold tracking-tight text-glow-sm">
-                Media Playground
+                Multimedia Explorer
               </h1>
               <p className="text-[11px] text-muted tracking-wide">
                 Powered by{" "}
@@ -609,7 +609,7 @@ export default function Home() {
             Built with the OpenRouter SDK
           </a>
           <a
-            href="https://github.com/OpenRouterTeam/media-playground"
+            href="https://github.com/OpenRouterTeam/multimedia-explorer"
             className="hover:text-accent transition-colors"
             target="_blank"
             rel="noopener noreferrer"
