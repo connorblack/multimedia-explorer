@@ -684,7 +684,7 @@ export default function Home() {
           >
             <div className="flex items-start justify-between">
               <h2 className="text-lg font-heading font-bold tracking-tight text-glow-sm">
-                // MEDIA PLAYGROUND
+                // MULTIMEDIA EXPLORER
               </h2>
               <button
                 onClick={() => dismissIntro()}
@@ -740,8 +740,8 @@ export default function Home() {
                 </li>
                 <li>Type a prompt to generate a superhero for your brand.</li>
                 <li>
-                  Click the button to add the image as an input. Then put your
-                  superhero somewhere else. Perhaps on the moon?
+                  Click the button to add the image as an input. Then select a
+                  video model and put your character in a generated video!
                 </li>
                 <li>
                   Hover over the dots on the left to view your past generations.
