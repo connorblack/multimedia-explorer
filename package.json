@@ -2,11 +2,15 @@
   "name": "multimedia-explorer",
   "version": "0.1.0",
   "private": true,
+  "bin": {
+    "mme": "cli/mme.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "mme": "bun cli/mme.ts"
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.35",
@@ -19,6 +23,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bun": "^1.3.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
