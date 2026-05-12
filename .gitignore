@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# git worktrees (defensive — convention is out-of-tree)
+.worktrees/
+worktrees/
