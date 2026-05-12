@@ -14,7 +14,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 const client = new OpenRouter({
   httpReferer: "http://localhost:3000",
-  xTitle: "Multimedia Explorer",
+  appTitle: "Multimedia Explorer",
 });
 
 function stripProviderPrefix(name: string): string {

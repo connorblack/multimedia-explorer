@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const client = createClient(apiKey);
 
     const result = await client.chat.send({
-      chatGenerationParams: {
+      chatRequest: {
         model: model || "google/gemini-2.5-flash",
         messages: [
           {

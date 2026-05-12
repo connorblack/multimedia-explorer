@@ -58,7 +58,7 @@ Return ONLY valid JSON, no markdown fences.`;
     }
 
     const result = await client.chat.send({
-      chatGenerationParams: {
+      chatRequest: {
         model: model || "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemContent },
