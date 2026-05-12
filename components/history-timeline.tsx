@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { HistoryEntry } from "@/lib/types";
 
 export default function HistoryTimeline({
@@ -62,9 +63,12 @@ export default function HistoryTimeline({
                 {/* Thumbnail popover */}
                 {hoveredId === entry.id && entry.imageUrl && (
                   <div className="absolute top-1/2 right-full mr-3 -translate-y-1/2 z-50 w-[7rem] p-1.5 bg-surface border border-accent/30 rounded-xl shadow-lg backdrop-blur-sm glow-accent-sm">
-                    <img
+                    <Image
                       src={entry.imageUrl}
                       alt="History thumbnail"
+                      width={96}
+                      height={96}
+                      unoptimized
                       className="w-24 h-24 object-cover rounded-lg"
                     />
                   </div>

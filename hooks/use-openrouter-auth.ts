@@ -12,7 +12,6 @@ import {
 import React from "react";
 import {
   getApiKey,
-  setApiKey as storeApiKey,
   clearApiKey,
   onAuthChange,
   initiateOAuth,
@@ -56,6 +55,10 @@ export function OpenRouterAuthProvider({ children }: { children: ReactNode }) {
     // Only process ?code= if we initiated an OAuth flow (verifier exists)
     if (code && hasOAuthCallbackPending()) {
       callbackProcessed.current = true;
+      // OAuth callback flag is client-only (window.location), so we can't seed
+      // isLoading=true during SSR. Setting it here forces one cascading render,
+      // which is the standard tradeoff for SSR-bound auth callback handling.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(true);
       handleOAuthCallback(code)
         .then(() => {

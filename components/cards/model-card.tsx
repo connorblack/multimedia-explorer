@@ -51,7 +51,7 @@ export function ModelCardBody({
   return (
     <div>
       <h2 className="text-base font-heading font-bold tracking-tight text-glow-sm mb-3">
-        // CHOOSE A MODEL
+        {"// CHOOSE A MODEL"}
       </h2>
       <div className="flex items-center gap-3">
         <div className="flex rounded-lg border border-border overflow-hidden shrink-0">

@@ -5,7 +5,7 @@ import type { MediaResult } from "@/lib/types";
 import type { VideoStatus } from "@/hooks/use-video-generation";
 
 function ElapsedTime() {
-  const startRef = useRef(Date.now());
+  const startRef = useRef(0);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -34,11 +34,8 @@ export default function ImageResult({
   videoStatus?: VideoStatus;
   videoError?: string | null;
 }) {
-  const [added, setAdded] = useState(false);
-
-  useEffect(() => {
-    setAdded(false);
-  }, [loading, result]);
+  const [addedFor, setAddedFor] = useState<MediaResult | null>(null);
+  const added = !loading && addedFor !== null && addedFor === result;
 
   const isVideoGenerating =
     videoStatus === "submitting" ||
@@ -129,7 +126,7 @@ export default function ImageResult({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-heading font-bold tracking-tight text-glow-sm">// RESULT</h2>
+        <h2 className="text-base font-heading font-bold tracking-tight text-glow-sm">{"// RESULT"}</h2>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted tracking-wide">{result.model}</span>
           {!isVideo && onAddAsInputImage && (
@@ -137,7 +134,7 @@ export default function ImageResult({
               onClick={() => {
                 if (result.type === "image") {
                   onAddAsInputImage(result.imageUrl);
-                  setAdded(true);
+                  setAddedFor(result);
                 }
               }}
               className="px-4 py-2 text-xs tracking-wide border border-border rounded-lg hover:border-accent/40 hover:text-accent hover:shadow-[0_0_8px_rgba(59,130,246,0.1)] transition-all cursor-pointer"

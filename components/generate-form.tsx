@@ -186,7 +186,7 @@ export default function GenerateForm({
   return (
     <div className="space-y-5">
       <h2 className="text-base font-heading font-bold tracking-tight text-glow-sm">
-        // GENERATE {mediaType.toUpperCase()}
+        {`// GENERATE ${mediaType.toUpperCase()}`}
       </h2>
 
       <form onSubmit={handleGenerate} className="space-y-4">

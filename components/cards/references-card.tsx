@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import type { ReferenceImage } from "@/lib/types";
 
 export function ReferencesCardHeader({ images }: { images: ReferenceImage[] }) {
@@ -103,9 +104,12 @@ export function ReferencesCardBody({
         <div className="flex gap-3 flex-wrap">
           {images.map((img) => (
             <div key={img.id} className="relative group">
-              <img
+              <Image
                 src={img.url}
                 alt={img.name}
+                width={128}
+                height={128}
+                unoptimized
                 className="w-32 h-32 object-cover rounded-lg border border-border hover:border-accent/30 hover:shadow-[0_0_8px_rgba(59,130,246,0.1)] transition-all"
               />
               <button

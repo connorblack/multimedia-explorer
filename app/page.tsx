@@ -648,7 +648,7 @@ export default function Home() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-surface border border-border rounded-xl p-8 max-w-sm mx-4 space-y-5 glow-accent-sm">
             <h3 className="text-sm font-heading font-bold tracking-tight text-glow-sm">
-              // DELETE ALL DATA
+              {"// DELETE ALL DATA"}
             </h3>
             <p className="text-xs text-muted leading-relaxed">
               This will permanently delete all your settings, API key, moodboard
@@ -684,7 +684,7 @@ export default function Home() {
           >
             <div className="flex items-start justify-between">
               <h2 className="text-lg font-heading font-bold tracking-tight text-glow-sm">
-                // MULTIMEDIA EXPLORER
+                {"// MULTIMEDIA EXPLORER"}
               </h2>
               <button
                 onClick={() => dismissIntro()}
@@ -722,7 +722,7 @@ export default function Home() {
 
             <div className="space-y-3">
               <h3 className="text-sm font-heading font-bold tracking-tight">
-                // GET STARTED
+                {"// GET STARTED"}
               </h3>
               <ol className="space-y-3 text-sm text-muted leading-relaxed list-decimal list-inside">
                 <li>
